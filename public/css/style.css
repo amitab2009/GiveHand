@@ -1,0 +1,189 @@
+body {
+    background-color: #fffdf9;
+    color: #25284a;
+}
+
+
+/* top menu */
+
+.navbar {
+    background-color: #fffdf9 !important;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee8e2;
+}
+
+.navbar-brand {
+    font-size: 29px;
+    font-weight: bold;
+    color: #25284a !important;
+}
+
+.navbar a {
+    margin-left: 7px;
+}
+
+.navbar .btn-outline-light {
+    color: #25284a;
+    border-color: transparent;
+}
+
+.navbar .btn-outline-light:hover {
+    background-color: #eee9ff;
+    color: #6f63cf;
+}
+
+.navbar .btn-light {
+    background-color: white;
+    color: #6f63cf;
+    border: 1px solid #6f63cf;
+}
+
+.navbar .btn-warning {
+    background-color: #7568d8;
+    border-color: #7568d8;
+    color: white;
+}
+
+
+/* first part */
+
+.main {
+    background-color: #fffaf5;
+    padding: 70px 20px;
+}
+
+.main h1 {
+    font-size: 62px;
+    font-weight: bold;
+    color: #25284a;
+}
+
+.main h2 {
+    color: #7568d8;
+    margin-top: 15px;
+    margin-bottom: 22px;
+}
+
+.main p {
+    font-size: 19px;
+    line-height: 1.7;
+    margin-bottom: 30px;
+    max-width: 520px;
+}
+
+.main-img {
+    width: 100%;
+    max-height: 430px;
+    object-fit: contain;
+    border-radius: 20px;
+}
+
+
+/* buttons */
+
+.btn-success {
+    background-color: #7568d8 !important;
+    border-color: #7568d8 !important;
+}
+
+.btn-success:hover {
+    background-color: #6255c5 !important;
+    border-color: #6255c5 !important;
+}
+
+.btn-outline-success {
+    color: #7568d8 !important;
+    border-color: #7568d8 !important;
+}
+
+.btn-outline-success:hover {
+    background-color: #7568d8 !important;
+    color: white !important;
+}
+
+
+/* help boxes */
+
+.help {
+    padding-top: 70px;
+    padding-bottom: 75px;
+}
+
+.help h2 {
+    text-align: center;
+    color: #25284a;
+    margin-bottom: 45px;
+}
+
+.box {
+    background-color: white;
+    padding: 30px;
+    min-height: 190px;
+
+    border-radius: 18px;
+    border: 1px solid #eee8e2;
+
+    box-shadow: 0 4px 15px rgba(60, 50, 100, 0.07);
+}
+
+.box h4 {
+    color: #7568d8;
+}
+
+
+/* steps */
+
+.steps {
+    background-color: #f4f1ff;
+    padding: 65px 20px;
+    text-align: center;
+}
+
+.steps h2 {
+    color: #25284a;
+    margin-bottom: 45px;
+}
+
+.steps h3 {
+    color: #7568d8;
+    font-size: 42px;
+}
+
+.steps h5 {
+    color: #25284a;
+}
+
+
+
+/* bottom */
+
+.join {
+    text-align: center;
+
+    background-color: #fff0e8;
+    padding: 65px 20px;
+}
+
+.join h2 {
+    color: #25284a;
+}
+
+.join p {
+    margin-top: 15px;
+    margin-bottom: 25px;
+}
+
+
+/* footer */
+
+footer {
+    background-color: #25284a;
+    color: white;
+
+    text-align: center;
+    padding: 25px;
+}
+
+footer p {
+    margin: 0;
+}
