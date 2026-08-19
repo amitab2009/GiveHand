@@ -305,11 +305,6 @@ footer p {
 }
 /* feed */
 
-.feed-page {
-    min-height: 90vh;
-    background-color: #fffaf5;
-    padding: 45px 20px 70px;
-}
 
 .feed-top {
     display: flex;
@@ -351,56 +346,231 @@ footer p {
 .project-card {
     background-color: white;
 
-    border-radius: 18px;
+    border-radius: 20px;
     overflow: hidden;
 
     height: 100%;
 
     border: 1px solid #eee8e2;
 
-    box-shadow: 0 4px 15px rgba(60, 50, 100, 0.08);
+    box-shadow: 0 5px 18px rgba(60, 50, 100, 0.09);
 
     transition: 0.2s;
 }
 
 .project-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(60, 50, 100, 0.14);
 }
 
 
-.project-img {
-    width: 100%;
-    height: 190px;
+.project-top {
+    height: 115px;
 
-    object-fit: cover;
+    background: linear-gradient(
+        135deg,
+        #eee9ff,
+        #ffe9ef,
+        #fff1d8
+    );
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.project-category {
+    background-color: white;
+
+    color: #7568d8;
+
+    padding: 8px 16px;
+
+    border-radius: 20px;
+
+    font-weight: 600;
+    font-size: 14px;
+
+    box-shadow: 0 2px 8px rgba(60, 50, 100, 0.08);
 }
 
 
 .project-info {
-    padding: 18px;
+    padding: 20px;
 }
 
+
 .project-info h4 {
-    color: #7568d8;
+    color: #25284a;
+
+    font-size: 21px;
+    font-weight: 650;
+
     margin-bottom: 8px;
 }
 
 
 .location {
-    color: #777;
+    color: #7568d8;
     font-size: 14px;
 
-    margin-bottom: 12px;
+    margin-bottom: 14px;
+}
+
+
+.project-text {
+    color: #555;
+    min-height: 70px;
+
+    line-height: 1.5;
 }
 
 
 .looking {
     color: #e05a67;
-    font-weight: 500;
+
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+
+.contact {
+    color: #777;
+    font-size: 14px;
+
+    margin-bottom: 15px;
 }
 
 
 .project-info button {
     width: 100%;
-    margin-top: 8px;
+
+    border-radius: 11px;
+
+    padding: 9px;
+}
+
+.project-img {
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+}
+
+/* create project */
+
+
+.new-project {
+    min-height: 90vh;
+    padding: 55px 20px;
+
+    background: linear-gradient(
+        135deg,
+        #fff7f3,
+        #f6f1ff,
+        #eef7ff
+    );
+}
+
+
+.form-box {
+    max-width: 760px;
+    margin: auto;
+
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 42px;
+
+    border-radius: 24px;
+
+    border: 1px solid #eee8f7;
+
+    box-shadow: 0 8px 25px rgba(74, 61, 120, 0.10);
+}
+
+
+.form-box h2 {
+    color: #5f52c8;
+    font-size: 40px;
+    margin-bottom: 8px;
+
+    font-family: "Comic Sans MS", cursive;
+    font-weight: bold;
+}
+
+
+.form-box > p {
+    color: #777;
+    font-size: 17px;
+
+    margin-bottom: 28px;
+}
+
+
+.form-box label {
+    margin-top: 17px;
+    margin-bottom: 7px;
+
+    font-weight: 500;
+    color: #37395e;
+}
+
+
+.form-box input,
+.form-box textarea,
+.form-box select {
+    border-radius: 12px;
+
+    border: 1px solid #ded8ea;
+
+    padding: 11px 13px;
+
+    background-color: #fffdfd;
+}
+
+
+.form-box input:focus,
+.form-box textarea:focus,
+.form-box select:focus {
+    border-color: #8d80e8;
+
+    box-shadow: 0 0 0 3px rgba(117, 104, 216, 0.12);
+}
+
+
+.row2 {
+    display: flex;
+    gap: 18px;
+}
+
+.row2 div {
+    width: 50%;
+}
+
+
+.form-box button {
+    width: 100%;
+
+    margin-top: 30px;
+    padding: 12px;
+
+    border-radius: 12px;
+
+    font-size: 17px;
+}
+
+
+.form-box::before {
+    content: "✦  Create something good";
+    display: inline-block;
+
+    color: #7568d8;
+    background-color: #f0edff;
+
+    padding: 7px 13px;
+
+    border-radius: 20px;
+
+    margin-bottom: 18px;
+
+    font-size: 14px;
 }

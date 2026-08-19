@@ -1,10 +1,15 @@
 require("dotenv").config();
+const multer = require("multer");
 const { MongoClient } = require("mongodb");
 const express = require("express");
 const path = require("path");
 const uri = process.env.MONGO_URI;
 const client = new MongoClient(uri);
 const app = express();
+const upload = multer({
+    dest: "public/uploads/"
+});
+
 
 let db;
 
@@ -130,6 +135,48 @@ app.post("/login", async function(req, res) {
 // feed
 app.get("/feed", function(req, res) {
     res.sendFile(path.join(__dirname, "views", "feed.html"));
+});
+
+app.get("/create-project", function(req, res) {
+    res.sendFile(path.join(__dirname, "views", "create-project.html"));
+});
+
+app.post("/create-project", upload.single("image"), async function(req, res) {
+
+    const projectName = req.body.projectName;
+    const description = req.body.description;
+    const location = req.body.location;
+    const category = req.body.category;
+    const volunteers = req.body.volunteers;
+    const contact = req.body.contact;
+
+    let image = "";
+
+    if (req.file) {
+        image = "/uploads/" + req.file.filename;
+    }
+
+    const newProject = {
+        projectName: projectName,
+        description: description,
+        location: location,
+        category: category,
+        volunteers: Number(volunteers),
+        contact: contact,
+        image: image,
+        joined: 0
+    };
+
+    await db.collection("projects").insertOne(newProject);
+
+    res.json({ success: true });
+});
+
+app.get("/api/projects", async function(req, res) {
+
+    const projects = await db.collection("projects").find().toArray();
+
+    res.json(projects);
 });
 
 app.listen(3000);

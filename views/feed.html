@@ -44,9 +44,9 @@
                 </p>
             </div>
 
-            <button class="btn btn-success">
-                Create Project
-            </button>
+            <a href="/create-project" class="btn btn-success">
+                 Create Project
+             </a>
 
         </div>
 
@@ -63,143 +63,7 @@
         </div>
 
 
-        <div class="row g-4">
-
-
-            <div class="col-lg-3 col-md-6">
-
-                <div class="project-card">
-
-                   <img src="/image/IMAG - GIVE HAND/Food Collection.jpg" class="project-img" alt="Food Collection">
-                    <div class="project-info">
-
-                        <h4>Food Collection</h4>
-
-                        <p class="location">
-                            📍 Rishon LeZion
-                        </p>
-
-                        <p>
-                            Help prepare food packages for families
-                            in the community.
-                        </p>
-
-                        <p class="looking">
-                            Looking for: 8 volunteers
-                        </p>
-
-                        <button class="btn btn-success">
-                            Join Project
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-            <div class="col-lg-3 col-md-6">
-
-                <div class="project-card">
-
-                   <img src="/image/IMAG - GIVE HAND/garden.png" class="project-img" alt="Community Garden">
-                    <div class="project-info">
-
-                        <h4>Community Garden</h4>
-
-                        <p class="location">
-                            📍 Tel Aviv
-                        </p>
-
-                        <p>
-                            Help clean and restore a neighborhood
-                            community garden.
-                        </p>
-
-                        <p class="looking">
-                            Looking for: 5 volunteers
-                        </p>
-
-                        <button class="btn btn-success">
-                            Join Project
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-            <div class="col-lg-3 col-md-6">
-
-                <div class="project-card">
-
-                  <img src="/image/IMAG - GIVE HAND/imageshomework.png" class="project-img" alt="Homework Help">
-                    <div class="project-info">
-
-                        <h4>Homework Help</h4>
-
-                        <p class="location">
-                            📍 Holon
-                        </p>
-
-                        <p>
-                            Help students with homework and studying
-                            after school.
-                        </p>
-
-                        <p class="looking">
-                            Looking for: 4 volunteers
-                        </p>
-
-                        <button class="btn btn-success">
-                            Join Project
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-            <div class="col-lg-3 col-md-6">
-
-                <div class="project-card">
-
-                   <img src="/image/IMAG - GIVE HAND/Animal Shelter.jpg" class="project-img" alt="Animal Shelter">
-                    <div class="project-info">
-
-                        <h4>Animal Shelter</h4>
-
-                        <p class="location">
-                            📍 Bat Yam
-                        </p>
-
-                        <p>
-                            Help care for animals and organize
-                            supplies at the shelter.
-                        </p>
-
-                        <p class="looking">
-                            Looking for: 6 volunteers
-                        </p>
-
-                        <button class="btn btn-success">
-                            Join Project
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </div>
-
+        <div class="row g-4" id="projectsList">
 
         </div>
 
@@ -209,6 +73,74 @@
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+async function loadProjects() {
+
+    const response = await fetch("/api/projects");
+    const projects = await response.json();
+
+    const list = document.getElementById("projectsList");
+
+    list.innerHTML = "";
+
+    projects.forEach(function(project) {
+
+        const box = document.createElement("div");
+
+        box.className = "col-lg-3 col-md-6";
+
+        box.innerHTML = `
+           <div class="project-card">
+
+    ${project.image ? `
+        <img src="${project.image}" class="project-img" alt="project image">
+    ` : `
+        <div class="project-top">
+            <span class="project-category">
+                ${project.category}
+            </span>
+        </div>
+    `}
+
+    <div class="project-info">
+
+        <h4>${project.projectName}</h4>
+
+        <p class="location">
+            📍 ${project.location}
+        </p>
+
+        <p class="project-text">
+            ${project.description}
+        </p>
+
+        <p class="looking">
+            Looking for: ${project.volunteers} volunteers
+        </p>
+
+        <p class="contact">
+            Contact: ${project.contact}
+        </p>
+
+        <button class="btn btn-success">
+            Join Project
+        </button>
+
+    </div>
+
+</div>
+        `;
+
+        list.appendChild(box);
+    });
+
+}
+
+loadProjects();
+
+</script>
 
 </body>
 
