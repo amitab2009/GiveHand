@@ -187,3 +187,220 @@ footer {
 footer p {
     margin: 0;
 }
+
+/* register page */
+.register-page {
+    min-height: 85vh;
+    background-color: #fffaf5;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 40px 20px;
+}
+
+.register-box {
+    width: 100%;
+    max-width: 470px;
+
+    background-color: white;
+    padding: 40px;
+
+    border-radius: 20px;
+    box-shadow: 0 5px 20px rgba(60, 50, 100, 0.10);
+}
+
+.register-box h2 {
+    color: #25284a;
+    margin-bottom: 10px;
+}
+
+.register-box > p {
+    color: #777;
+    margin-bottom: 30px;
+}
+
+.register-box label {
+    margin-top: 15px;
+    margin-bottom: 6px;
+}
+
+.register-box input {
+    border-radius: 10px;
+}
+
+.register-box button {
+    width: 100%;
+    margin-top: 25px;
+    padding: 10px;
+}
+
+.login-text {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 0 !important;
+}
+/* משתמש כבר קיים */
+
+.error-text {
+    color: #e05a67;
+    font-size: 14px;
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+
+.success-text {
+    color: #7568d8;
+    text-align: center;
+    margin-top: 15px;
+}
+
+/* feed */
+
+.feed-page {
+    background-color: #fffaf5;
+    min-height: 90vh;
+    padding: 45px 20px;
+}
+
+.feed-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 35px;
+}
+
+.feed-top h2 {
+    color: #25284a;
+}
+
+.feed-top p {
+    color: #777;
+    margin-bottom: 0;
+}
+
+
+.search-box {
+    display: flex;
+    gap: 10px;
+
+    background-color: white;
+    padding: 18px;
+
+    border-radius: 15px;
+
+    margin-bottom: 40px;
+}
+
+.search-box input {
+    border-radius: 10px;
+}
+
+
+.feed-title {
+    margin-bottom: 25px;
+    color: #25284a;
+}
+/* feed */
+
+.feed-page {
+    min-height: 90vh;
+    background-color: #fffaf5;
+    padding: 45px 20px 70px;
+}
+
+.feed-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 30px;
+}
+
+.feed-top h2 {
+    color: #25284a;
+    margin-bottom: 5px;
+}
+
+.feed-top p {
+    color: #777;
+    margin: 0;
+}
+
+
+.search-box {
+    display: flex;
+    gap: 10px;
+
+    background-color: white;
+    padding: 15px;
+
+    border-radius: 15px;
+    margin-bottom: 35px;
+
+    box-shadow: 0 3px 12px rgba(60, 50, 100, 0.06);
+}
+
+.search-box input {
+    border-radius: 10px;
+}
+
+
+.project-card {
+    background-color: white;
+
+    border-radius: 18px;
+    overflow: hidden;
+
+    height: 100%;
+
+    border: 1px solid #eee8e2;
+
+    box-shadow: 0 4px 15px rgba(60, 50, 100, 0.08);
+
+    transition: 0.2s;
+}
+
+.project-card:hover {
+    transform: translateY(-4px);
+}
+
+
+.project-img {
+    width: 100%;
+    height: 190px;
+
+    object-fit: cover;
+}
+
+
+.project-info {
+    padding: 18px;
+}
+
+.project-info h4 {
+    color: #7568d8;
+    margin-bottom: 8px;
+}
+
+
+.location {
+    color: #777;
+    font-size: 14px;
+
+    margin-bottom: 12px;
+}
+
+
+.looking {
+    color: #e05a67;
+    font-weight: 500;
+}
+
+
+.project-info button {
+    width: 100%;
+    margin-top: 8px;
+}
