@@ -22,7 +22,7 @@
         <div>
             <a href="/feed" class="btn btn-outline-light">Feed</a>
             <a href="#" class="btn btn-outline-light">Groups</a>
-            <a href="#" class="btn btn-outline-light">Profile</a>
+            <a href="/profile" class="btn btn-outline-light">Profile</a>
         </div>
 
     </div>
@@ -124,9 +124,10 @@ async function loadProjects() {
             Contact: ${project.contact}
         </p>
 
-        <button class="btn btn-success">
-            Join Project
-        </button>
+        <a href="/join-project/${project._id}" class="btn btn-success">
+        Join Project
+        </a>
+        
 
     </div>
 

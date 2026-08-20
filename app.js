@@ -1,6 +1,6 @@
 require("dotenv").config();
 const multer = require("multer");
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 const express = require("express");
 const path = require("path");
 const uri = process.env.MONGO_URI;
@@ -172,11 +172,123 @@ app.post("/create-project", upload.single("image"), async function(req, res) {
     res.json({ success: true });
 });
 
+// profile
+app.get("/profile", function(req, res) {
+    res.sendFile(path.join(__dirname, "views", "profile.html"));
+});
+
+// project details page
+app.get("/join-project/:id", function(req, res) {
+    res.sendFile(
+        path.join(__dirname, "views", "join-project.html")
+    );
+});
+
 app.get("/api/projects", async function(req, res) {
 
     const projects = await db.collection("projects").find().toArray();
 
     res.json(projects);
+});
+
+// get one project
+app.get("/api/projects/:id", async function(req, res) {
+
+    try {
+        const projectId = req.params.id;
+
+        if (!ObjectId.isValid(projectId)) {
+            return res.status(400).json({
+                error: "Invalid project ID"
+            });
+        }
+
+        const project = await db.collection("projects").findOne({
+            _id: new ObjectId(projectId)
+        });
+
+        if (!project) {
+            return res.status(404).json({
+                error: "Project not found"
+            });
+        }
+
+        res.json(project);
+    }
+    catch (error) {
+        console.log(error);
+
+        res.status(500).json({
+            error: "Could not load project"
+        });
+    }
+});
+
+
+// join a project
+app.post("/api/projects/:id/join", async function(req, res) {
+
+    try {
+        const projectId = req.params.id;
+
+        if (!ObjectId.isValid(projectId)) {
+            return res.status(400).json({
+                error: "Invalid project ID"
+            });
+        }
+
+        const result = await db.collection("projects").updateOne(
+            {
+                _id: new ObjectId(projectId),
+
+                $expr: {
+                    $lt: [
+                        { $ifNull: ["$joined", 0] },
+                        "$volunteers"
+                    ]
+                }
+            },
+            {
+                $inc: {
+                    joined: 1
+                }
+            }
+        );
+
+        if (result.modifiedCount === 0) {
+
+            const project = await db.collection("projects").findOne({
+                _id: new ObjectId(projectId)
+            });
+
+            if (!project) {
+                return res.status(404).json({
+                    error: "Project not found"
+                });
+            }
+
+            return res.status(400).json({
+                error: "This project is already full"
+            });
+        }
+
+        const updatedProject =
+            await db.collection("projects").findOne({
+                _id: new ObjectId(projectId)
+            });
+
+        res.json({
+            success: true,
+            project: updatedProject
+        });
+    }
+    catch (error) {
+        console.log(error);
+
+        res.status(500).json({
+            error: "Could not join the project"
+        });
+    }
 });
 
 app.listen(3000);
