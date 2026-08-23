@@ -291,4 +291,55 @@ app.post("/api/projects/:id/join", async function(req, res) {
     }
 });
 
+// cancel joining a project
+app.post("/api/projects/:id/leave", async function(req, res) {
+
+    try {
+        const projectId = req.params.id;
+
+        if (!ObjectId.isValid(projectId)) {
+            return res.status(400).json({
+                error: "Invalid project ID"
+            });
+        }
+
+        const result = await db.collection("projects").updateOne(
+            {
+                _id: new ObjectId(projectId),
+                joined: { $gt: 0 }
+            },
+            {
+                $inc: {
+                    joined: -1
+                }
+            }
+        );
+
+        if (result.modifiedCount === 0) {
+            return res.status(400).json({
+                error: "You are not joined to this project"
+            });
+        }
+
+        const updatedProject = await db.collection("projects").findOne({
+            _id: new ObjectId(projectId)
+        });
+
+        res.json({
+            success: true,
+            project: updatedProject
+        });
+
+    }
+    catch (error) {
+
+        console.log(error);
+
+        res.status(500).json({
+            error: "Could not cancel joining"
+        });
+    }
+});
+
+
 app.listen(3000);

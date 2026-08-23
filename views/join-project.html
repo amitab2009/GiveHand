@@ -165,6 +165,14 @@
 
                 </button>
 
+                <button id="cancelButton"
+                 class="btn btn-danger details-join-button"
+                 style="display: none;">
+
+                Cancel Joining
+
+              </button>
+
                 <p id="joinMessage"
                    class="join-message">
                 </p>
@@ -191,6 +199,9 @@ const projectDetails =
 
 const joinButton =
     document.getElementById("joinButton");
+
+const cancelButton =
+   document.getElementById("cancelButton");
 
 const joinMessage =
     document.getElementById("joinMessage");
@@ -243,6 +254,22 @@ function saveJoinedProject() {
         JSON.stringify(joinedProjects)
     );
 }
+
+function removeJoinedProject() {
+
+    let joinedProjects = getJoinedProjects();
+
+    joinedProjects =
+        joinedProjects.filter(function(id) {
+            return id !== projectId;
+        });
+
+    localStorage.setItem(
+        "joinedProjects",
+        JSON.stringify(joinedProjects)
+    );
+}
+
 
 
 function showProject(project) {
@@ -313,23 +340,30 @@ function showProject(project) {
     }
 
 
-    if (placesLeft === 0) {
+   if (alreadyJoined()) {
 
-        joinButton.disabled = true;
-        joinButton.textContent = "Project Full";
-    }
-    else if (alreadyJoined()) {
+    joinButton.style.display = "none";
 
-        joinButton.disabled = true;
-        joinButton.textContent = "You Joined";
-    }
-    else {
+    cancelButton.style.display = "block";
+    cancelButton.disabled = false;
+}
+else if (placesLeft === 0) {
 
-        joinButton.disabled = false;
-        joinButton.textContent =
-            "Join This Project";
-    }
+    joinButton.style.display = "block";
+    joinButton.disabled = true;
+    joinButton.textContent = "Project Full";
 
+    cancelButton.style.display = "none";
+}
+else {
+
+    joinButton.style.display = "block";
+    joinButton.disabled = false;
+    joinButton.textContent =
+        "Join This Project";
+
+    cancelButton.style.display = "none";
+}
 
     loadingMessage.classList.add("d-none");
     projectDetails.classList.remove("d-none");
@@ -394,6 +428,46 @@ joinButton.addEventListener("click", async function() {
             showProject(currentProject);
         }
     }
+});
+
+cancelButton.addEventListener("click", async function() {
+
+    cancelButton.disabled = true;
+    cancelButton.textContent = "Cancelling...";
+    joinMessage.textContent = "";
+
+    try {
+
+        const response = await fetch(
+            "/api/projects/" + projectId + "/leave",
+            {
+                method: "POST"
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error);
+        }
+
+        removeJoinedProject();
+
+        cancelButton.textContent = "Cancel Joining";
+
+        showProject(result.project);
+
+        joinMessage.textContent =
+            "Your registration was cancelled.";
+    }
+    catch (error) {
+
+        cancelButton.disabled = false;
+        cancelButton.textContent = "Cancel Joining";
+
+        joinMessage.textContent = error.message;
+    }
+
 });
 
 
