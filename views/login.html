@@ -100,22 +100,27 @@ form.addEventListener("submit", async function(event) {
         })
 
     });
+const data = await response.json();
 
-    const data = await response.json();
+if (data.error === "user") {
+    document.getElementById("usernameError").textContent =
+        "Username does not exist";
+    return;
+}
 
-    if (data.error === "user") {
-        document.getElementById("usernameError").textContent =
-            "Username does not exist";
-        return;
-    }
+if (data.error === "password") {
+    document.getElementById("passwordError").textContent =
+        "Password is incorrect";
+    return;
+}
 
-    if (data.error === "password") {
-        document.getElementById("passwordError").textContent =
-            "Password is incorrect";
-        return;
-    }
+if (data.success) {
+    window.location.href = "/feed";
+    return;
+}
 
-   window.location.href = "/feed";
+document.getElementById("loginError").textContent =
+    "Login failed";
 
 });
 

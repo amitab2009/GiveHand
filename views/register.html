@@ -227,12 +227,12 @@ form.addEventListener("submit", async function(event) {
             "Password must contain one uppercase letter";
         return;
     }
-
-
-   if (data.success) {
+if (data.success) {
+    localStorage.setItem("fullName", fullName);
+    localStorage.setItem("username", username);
+    localStorage.setItem("email", email);
     window.location.href = "/feed";
 }
-
 });
 
 </script>

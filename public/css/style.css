@@ -952,12 +952,14 @@ footer p {
     font-size: 29px;
 
     margin-bottom: 4px;
+    transform: translateY(15px);
 }
 
 .profile-subtitle {
     color: #777;
 
     margin-bottom: 30px;
+     transform: translateY(5px);
 }
 
 
@@ -1080,4 +1082,86 @@ footer p {
     .profile-actions .btn {
         width: 100%;
     }
+}
+
+#filterBox {
+    margin-top: 6px;
+    padding: 0 20px 15px 20px;
+    font-family: inherit;
+}
+
+#filterBox label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+#categoryFilter {
+    width: 100%;
+    height: 48px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 0 14px;
+    font-family: inherit;
+    font-size: 16px;
+    background-color: white;
+    color: #222;
+    cursor: pointer;
+}
+
+#categoryFilter:focus {
+    outline: none;
+    border-color: #6c5ce7;
+    box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.1);
+}
+#filterBox {
+    margin-top: -35px !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    position: relative;
+    z-index: 2;
+}
+
+#filterBox label {
+    margin-top: 0 !important;
+    margin-bottom: 5px !important;
+}
+#filterBox label {
+    color: #777;
+}
+
+#categoryFilter {
+    color: #777;
+}
+#categoryFilter {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    height: 48px;
+    padding: 0 14px;
+    color: #777;
+    background-color: white;
+    font-family: inherit;
+    font-size: 16px;
+    box-shadow: none;
+}
+#categoryFilter:focus {
+    outline: none;
+    border-color: #ddd;
+    box-shadow: none;
+}
+.profile-picture-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.profile-upload-btn {
+    margin-top: -10px;
+    padding: 3px 12px;
+    font-size: 13px;
+    border-radius: 7px;
+    white-space: nowrap;
+    transform: translateX(-280px);
 }

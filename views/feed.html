@@ -50,17 +50,80 @@
 
         </div>
 
+<div class="search-box">
 
-        <div class="search-box">
+    <input type="text"
+           id="searchInput"
+           class="form-control"
+           placeholder="Search projects or locations">
 
-            <input type="text" class="form-control"
-                   placeholder="Search projects or locations">
+    <button id="searchButton" class="btn btn-success">
+        Search
+    </button>
 
-            <button class="btn btn-success">
-                Search
-            </button>
+    <button id="filterButton" class="btn btn-outline-success">
+        Filters
+    </button>
 
+</div>
+<div id="filterBox" style="display: none;">
+    <label for="categoryFilter">Category</label>
+
+    <select id="categoryFilter" class="form-select">
+
+        <option value="">All Categories</option>
+        <option value="Food">Food</option>
+        <option value="Education">Education</option>
+        <option value="Animals">Animals</option>
+        <option value="Environment">Environment</option>
+        <option value="Community">Community</option>
+
+    </select>
+
+</div>
+
+<div id="filterBox" style="display: none; margin-top: 15px;">
+
+    <div class="row g-3">
+
+        <div class="col-md-4">
+            <label class="form-label">Category</label>
+
+            <select id="categoryFilter" class="form-select">
+                <option value="">All Categories</option>
+                <option value="Food">Food</option>
+                <option value="Education">Education</option>
+                <option value="Animals">Animals</option>
+                <option value="Environment">Environment</option>
+                <option value="Community">Community</option>
+            </select>
         </div>
+
+
+        <div class="col-md-4">
+            <label class="form-label">Location</label>
+
+            <input type="text"
+                   id="locationFilter"
+                   class="form-control"
+                   placeholder="Enter location">
+        </div>
+
+
+        <div class="col-md-4">
+            <label class="form-label">Free places</label>
+
+            <select id="placesFilter" class="form-select">
+                <option value="">Any number</option>
+                <option value="1">At least 1</option>
+                <option value="5">At least 5</option>
+                <option value="10">At least 10</option>
+            </select>
+        </div>
+
+    </div>
+
+</div>
 
 
         <div class="row g-4" id="projectsList">
@@ -73,17 +136,37 @@
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
+
+let allProjects = [];
 
 async function loadProjects() {
 
     const response = await fetch("/api/projects");
-    const projects = await response.json();
+    allProjects = await response.json();
+
+    displayProjects(allProjects);
+
+}
+
+function displayProjects(projects) {
 
     const list = document.getElementById("projectsList");
 
     list.innerHTML = "";
+
+    if (projects.length === 0) {
+
+        list.innerHTML = `
+            <div class="col-12">
+                <p class="text-center">
+                    No projects found.
+                </p>
+            </div>
+        `;
+
+        return;
+    }
 
     projects.forEach(function(project) {
 
@@ -92,57 +175,241 @@ async function loadProjects() {
         box.className = "col-lg-3 col-md-6";
 
         box.innerHTML = `
-           <div class="project-card">
+            <div class="project-card">
 
-    ${project.image ? `
-        <img src="${project.image}" class="project-img" alt="project image">
-    ` : `
-        <div class="project-top">
-            <span class="project-category">
-                ${project.category}
-            </span>
-        </div>
-    `}
+                ${project.image ? `
+                    <img src="${project.image}"
+                         class="project-img"
+                         alt="project image">
+                ` : `
+                    <div class="project-top">
+                        <span class="project-category">
+                            ${project.category}
+                        </span>
+                    </div>
+                `}
 
-    <div class="project-info">
+                <div class="project-info">
 
-        <h4>${project.projectName}</h4>
+                    <h4>${project.projectName}</h4>
 
-        <p class="location">
-            📍 ${project.location}
-        </p>
+                    <p class="location">
+                        📍 ${project.location}
+                    </p>
 
-        <p class="project-text">
-            ${project.description}
-        </p>
+                    <p class="project-text">
+                        ${project.description}
+                    </p>
 
-        <p class="looking">
-            Looking for: ${project.volunteers} volunteers
-        </p>
+                    <p class="looking">
+                        Looking for: ${project.volunteers} volunteers
+                    </p>
 
-        <p class="contact">
-            Contact: ${project.contact}
-        </p>
+                    <p class="contact">
+                        Contact: ${project.contact}
+                    </p>
 
-        <a href="/join-project/${project._id}" class="btn btn-success">
-        Join Project
-        </a>
-        
+                    <a href="/join-project/${project._id}"
+                       class="btn btn-success">
+                        Join Project
+                    </a>
 
-    </div>
+                </div>
 
-</div>
+            </div>
         `;
 
         list.appendChild(box);
+
     });
 
 }
 
+function searchProjects() {
+
+    const searchText =
+        document.getElementById("searchInput").value
+        .trim()
+        .toLowerCase();
+
+    const category =
+        document.getElementById("categoryFilter").value;
+
+    const locationFilter =
+        document.getElementById("locationFilter").value
+        .trim()
+        .toLowerCase();
+
+    const placesFilter =
+        document.getElementById("placesFilter").value;
+
+
+    const filteredProjects = allProjects.filter(function(project) {
+
+        const projectName =
+            String(project.projectName || "").toLowerCase();
+
+        const location =
+            String(project.location || "").toLowerCase();
+
+        const projectCategory =
+            String(project.category || "");
+
+        const volunteers =
+            Number(project.volunteers || 0);
+
+        const joined =
+            Number(project.joined || 0);
+
+        const freePlaces =
+            volunteers - joined;
+
+
+        const matchesSearch =
+            searchText === "" ||
+            projectName.includes(searchText) ||
+            location.includes(searchText);
+
+
+        const matchesCategory =
+            category === "" ||
+            projectCategory === category;
+
+
+        const matchesLocation =
+            locationFilter === "" ||
+            location.includes(locationFilter);
+
+
+        const matchesPlaces =
+            placesFilter === "" ||
+            freePlaces >= Number(placesFilter);
+
+
+        return matchesSearch &&
+               matchesCategory &&
+               matchesLocation &&
+               matchesPlaces;
+
+    });
+
+
+    displayProjects(filteredProjects);
+
+}
+
+document
+    .getElementById("searchButton")
+    .addEventListener("click", searchProjects);
+
+document
+    .getElementById("searchInput")
+    .addEventListener("input", searchProjects);
+
+document
+    .getElementById("searchInput")
+    .addEventListener("keydown", function(event) {
+
+        if (event.key === "Enter") {
+            searchProjects();
+        }
+
+    });
+
+    document
+    .getElementById("filterButton")
+    .addEventListener("click", function() {
+
+        const filterBox =
+            document.getElementById("filterBox");
+
+        if (filterBox.style.display === "none") {
+            filterBox.style.display = "block";
+        } else {
+            filterBox.style.display = "none";
+        }
+
+    });
+
+
+document
+    .getElementById("categoryFilter")
+    .addEventListener("change", searchProjects);
+
+
+document
+    .getElementById("locationFilter")
+    .addEventListener("input", searchProjects);
+
+
+document
+    .getElementById("placesFilter")
+    .addEventListener("change", searchProjects);
+    document.getElementById("filterButton").addEventListener("click", function () {
+
+    const filterBox = document.getElementById("filterBox");
+
+    if (filterBox.style.display === "none") {
+        filterBox.style.display = "block";
+    } else {
+        filterBox.style.display = "none";
+    }
+
+});
+
+
+document.getElementById("categoryFilter").addEventListener("change", function () {
+
+    const selectedCategory = this.value;
+
+    if (selectedCategory === "") {
+        displayProjects(allProjects);
+        return;
+    }
+
+    const filteredProjects = allProjects.filter(function (project) {
+
+        return project.category === selectedCategory;
+
+    });
+
+    displayProjects(filteredProjects);
+
+});
+document.getElementById("filterButton").addEventListener("click", function () {
+
+    const filterBox = document.getElementById("filterBox");
+
+    if (filterBox.style.display === "none") {
+        filterBox.style.display = "block";
+    } else {
+        filterBox.style.display = "none";
+    }
+
+});
+
+
+document.getElementById("categoryFilter").addEventListener("change", function () {
+
+    const selectedCategory = this.value;
+
+    if (selectedCategory === "") {
+        displayProjects(allProjects);
+        return;
+    }
+
+    const filteredProjects = allProjects.filter(function (project) {
+
+        return project.category === selectedCategory;
+
+    });
+
+    displayProjects(filteredProjects);
+
+});
 loadProjects();
 
 </script>
-
 </body>
 
 </html>

@@ -92,33 +92,37 @@
     </div>
 
 </div>
-
 <script>
 
 const form = document.getElementById("projectForm");
+
 form.addEventListener("submit", async function(event) {
 
     event.preventDefault();
-    const projectName = document.getElementById("projectName").value;
-    const description = document.getElementById("description").value;
-    const location = document.getElementById("location").value;
+
+    const projectName = document.getElementById("projectName").value.trim();
+    const description = document.getElementById("description").value.trim();
+    const location = document.getElementById("location").value.trim();
     const category = document.getElementById("category").value;
     const volunteers = document.getElementById("volunteers").value;
-    const contact = document.getElementById("contact").value;
+    const contact = document.getElementById("contact").value.trim();
     const image = document.getElementById("image").files[0];
-    document.getElementById("projectError").textContent = "";
 
+    const errorBox = document.getElementById("projectError");
 
+    errorBox.textContent = "";
 
-    if (projectName === "" || description === "" || location === "" ||
-        category === "" || volunteers === "" || contact === "") {
-
-        document.getElementById("projectError").textContent =
-            "Please fill in all fields";
-
+    if (
+        projectName === "" ||
+        description === "" ||
+        location === "" ||
+        category === "" ||
+        volunteers === "" ||
+        contact === ""
+    ) {
+        errorBox.textContent = "Please fill in all fields";
         return;
     }
-
 
     const data = new FormData();
 
@@ -132,24 +136,39 @@ form.addEventListener("submit", async function(event) {
     if (image) {
         data.append("image", image);
     }
-    const response = await fetch("/create-project", {
 
-        method: "POST",
-        body: data
+    try {
 
-    });
-    const result = await response.json();
+        const response = await fetch("/create-project", {
+            method: "POST",
+            body: data
+        });
 
+        const result = await response.json();
 
-    if (result.success) {
-        window.location.href = "/feed";
+        if (result.success) {
+
+            window.location.href = "/feed";
+
+        } else {
+
+            errorBox.textContent =
+                result.error || "Could not create project";
+
+        }
+
+    } catch (error) {
+
+        console.error("CREATE PROJECT ERROR:", error);
+
+        errorBox.textContent =
+            "Something went wrong while creating the project.";
+
     }
 
 });
 
-
 </script>
-
 </body>
 
 </html>

@@ -176,6 +176,13 @@
                 <p id="joinMessage"
                    class="join-message">
                 </p>
+                <button id="deleteButton"
+        class="btn btn-danger details-join-button"
+        style="display: none;">
+
+    Delete Project
+
+</button>
 
             </div>
 
@@ -205,6 +212,9 @@ const cancelButton =
 
 const joinMessage =
     document.getElementById("joinMessage");
+
+const deleteButton =
+    document.getElementById("deleteButton");
 
 let currentProject = null;
 
@@ -275,6 +285,8 @@ function removeJoinedProject() {
 function showProject(project) {
 
     currentProject = project;
+    
+    deleteButton.style.display = "none";
 
     const joined = project.joined || 0;
     const needed = project.volunteers || 0;
