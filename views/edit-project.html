@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Project - GiveHand</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"> 
+    <link rel="stylesheet" href="/css/style.css"> 
+</head> 
+ 
+<body> 
+ 
+<nav class="navbar navbar-expand-lg"> 
+ 
+    <div class="container"> 
+ 
+        <a class="navbar-brand" href="/feed"> 
+            GiveHand 
+        </a> 
+ 
+        <div> 
+            <a href="/feed" class="btn btn-outline-light"> 
+                Feed 
+            </a> 
+ 
+            <a href="#" class="btn btn-outline-light"> 
+                Groups 
+            </a> 
+ 
+            <a href="/profile" class="btn btn-outline-light"> 
+                Profile 
+            </a> 
+        </div> 
+ 
+    </div> 
+ 
+</nav> 
+ 
+ 
+<main class="edit-project-page"> 
+ 
+    <div class="edit-project-card"> 
+ 
+        <div class="edit-project-header"> 
+ 
+            <div> 
+                <span class="edit-small-title"> 
+                    Project settings 
+                </span> 
+ 
+                <h2> 
+                    Edit Project 
+                </h2> 
+ 
+                <p> 
+                    Update the information people see about your project. 
+                </p> 
+            </div> 
+ 
+        </div> 
+ 
+ 
+        <div id="editLoading" 
+             class="edit-loading"> 
+ 
+            Loading project... 
+ 
+        </div> 
+ 
+ 
+        <form id="editProjectForm" 
+              class="d-none"> 
+ 
+ 
+            <div class="edit-field"> 
+ 
+                <label> 
+                    Project name 
+                </label> 
+ 
+                <input type="text" 
+                       id="projectName" 
+                       class="form-control"> 
+ 
+            </div> 
+ 
+ 
+            <div class="edit-field"> 
+ 
+                <label> 
+                    Description 
+                </label> 
+ 
+                <textarea id="description" 
+                          class="form-control" 
+                          rows="5"> 
+                </textarea> 
+ 
+            </div> 
+ 
+ 
+            <div class="edit-two-columns"> 
+ 
+                <div class="edit-field"> 
+ 
+                    <label> 
+                        Location 
+                    </label> 
+ 
+                    <input type="text" 
+                           id="location" 
+                           class="form-control"> 
+ 
+                </div> 
+ 
+ 
+                <div class="edit-field"> 
+ 
+                    <label> 
+                        Category 
+                    </label> 
+ 
+                    <select id="category" 
+                            class="form-select"> 
+ 
+                        <option>Food</option> 
+                        <option>Education</option> 
+                        <option>Animals</option> 
+                        <option>Environment</option> 
+                        <option>Community</option> 
+ 
+                    </select> 
+ 
+                </div> 
+ 
+            </div> 
+ 
+ 
+            <div class="edit-two-columns"> 
+ 
+                <div class="edit-field"> 
+ 
+                    <label> 
+                        Volunteers needed 
+                    </label> 
+ 
+                    <input type="number" 
+                           id="volunteers" 
+                           class="form-control" 
+                           min="1"> 
+ 
+                </div> 
+ 
+ 
+                <div class="edit-field"> 
+ 
+                    <label> 
+                        Contact 
+                    </label> 
+ 
+                    <input type="text" 
+                           id="contact" 
+                           class="form-control"> 
+ 
+                </div> 
+ 
+            </div> 
+
+
+            <div class="edit-field">
+
+                <label>
+                    Project image
+                </label>
+
+                <input type="file"
+                       id="image"
+                       class="form-control"
+                       accept="image/*">
+
+                <p style="margin-top: 7px; color: #777; font-size: 13px;">
+                    Leave empty to keep the current image.
+                </p>
+
+            </div>
+ 
+ 
+            <p id="editError" 
+               class="error-text"> 
+            </p> 
+ 
+ 
+            <div class="edit-project-actions"> 
+ 
+                <a id="cancelEdit" 
+                   class="edit-cancel-button"> 
+ 
+                    Cancel 
+ 
+                </a> 
+ 
+                <button type="submit" 
+                        class="edit-save-button"> 
+ 
+                    Save Changes 
+ 
+                </button> 
+ 
+            </div> 
+ 
+        </form> 
+ 
+    </div> 
+ 
+</main> 
+ 
+ 
+<script> 
+ 
+const projectId = 
+    window.location.pathname.split("/").pop(); 
+ 
+const editLoading = 
+    document.getElementById("editLoading"); 
+ 
+const form = 
+    document.getElementById("editProjectForm"); 
+ 
+const errorBox = 
+    document.getElementById("editError"); 
+ 
+let currentJoined = 0; 
+ 
+ 
+async function loadProject() { 
+ 
+    try { 
+ 
+        const response = await fetch( 
+            "/api/projects/" + projectId 
+        ); 
+ 
+        const project = await response.json(); 
+ 
+        if (!response.ok) { 
+            throw new Error(project.error); 
+        } 
+ 
+ 
+        if (!project.isOwner) { 
+ 
+            window.location.href = 
+                "/join-project/" + projectId; 
+ 
+            return; 
+        } 
+ 
+ 
+        document.getElementById("projectName").value = 
+            project.projectName || ""; 
+ 
+        document.getElementById("description").value = 
+            project.description || ""; 
+ 
+        document.getElementById("location").value = 
+            project.location || ""; 
+ 
+        document.getElementById("category").value = 
+            project.category || ""; 
+ 
+        document.getElementById("volunteers").value = 
+            project.volunteers || ""; 
+ 
+        currentJoined = 
+            project.joined || 0; 
+ 
+        document.getElementById("volunteers").min = 
+            Math.max(currentJoined, 1); 
+ 
+        document.getElementById("contact").value = 
+            project.contact || ""; 
+ 
+ 
+        document.getElementById("cancelEdit").href = 
+            "/join-project/" + projectId; 
+ 
+ 
+        editLoading.classList.add("d-none"); 
+        form.classList.remove("d-none"); 
+ 
+    } 
+    catch (error) { 
+ 
+        editLoading.textContent = 
+            "Could not load this project."; 
+ 
+    } 
+ 
+} 
+ 
+ 
+form.addEventListener("submit", async function(event) { 
+ 
+    event.preventDefault(); 
+ 
+    errorBox.textContent = ""; 
+ 
+ 
+    const projectName = 
+        document.getElementById("projectName").value.trim(); 
+ 
+    const description = 
+        document.getElementById("description").value.trim(); 
+ 
+    const location = 
+        document.getElementById("location").value.trim(); 
+ 
+    const category = 
+        document.getElementById("category").value; 
+ 
+    const volunteers = 
+        document.getElementById("volunteers").value; 
+ 
+    const volunteersNumber = 
+        Number(volunteers); 
+ 
+    const contact = 
+        document.getElementById("contact").value.trim(); 
+
+    const image =
+        document.getElementById("image").files[0];
+ 
+ 
+    if ( 
+        projectName === "" || 
+        description === "" || 
+        location === "" || 
+        category === "" || 
+        volunteers === "" || 
+        contact === "" 
+    ) { 
+ 
+        errorBox.textContent = 
+            "Please fill in all fields"; 
+ 
+        return; 
+    } 
+ 
+ 
+    if (volunteersNumber < currentJoined) { 
+ 
+        errorBox.textContent = 
+            "You already have " + 
+            currentJoined + 
+            " volunteers joined. The number of volunteers needed cannot be lower than that."; 
+ 
+        return; 
+    } 
+
+
+    const data =
+        new FormData();
+
+    data.append("projectName", projectName);
+    data.append("description", description);
+    data.append("location", location);
+    data.append("category", category);
+    data.append("volunteers", volunteersNumber);
+    data.append("contact", contact);
+
+    if (image) {
+        data.append("image", image);
+    }
+ 
+ 
+    const response = await fetch( 
+        "/api/projects/" + projectId, 
+        { 
+            method: "PUT", 
+            body: data
+        } 
+    ); 
+ 
+ 
+    const result = 
+        await response.json(); 
+ 
+ 
+    if (!response.ok) { 
+ 
+        errorBox.textContent = 
+            result.error || 
+            "Could not update project"; 
+ 
+        return; 
+    } 
+ 
+ 
+    window.location.href = 
+        "/join-project/" + projectId; 
+ 
+}); 
+ 
+ 
+loadProject(); 
+ 
+</script> 
+ 
+</body> 
+ 
+</html>

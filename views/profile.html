@@ -51,91 +51,59 @@
 
     <div class="container">
 
-        <div class="profile-heading">
 
-            <h2>My Profile</h2>
+        <div class="profile-new-card">
 
-            <p>
-                View your personal GiveHand account details.
-            </p>
-
-        </div>
+            <div class="profile-new-avatar"
+                 id="profileAvatar">
+                T
+            </div>
 
 
-        <div class="profile-card">
+            <div class="profile-new-info">
 
-            <div class="profile-banner"></div>
+                <div class="profile-title-row">
 
+                    <div>
 
-            <div class="profile-content">
-<div class="profile-picture-section">
+                        <h2 id="profileName">
+                            Loading...
+                        </h2>
 
-    <div class="profile-avatar" id="profileAvatar">
-        Y
-    </div>
+                        <p class="profile-member-text">
+                            GiveHand Community Member
+                        </p>
 
-    <input
-        type="file"
-        id="profileImageInput"
-        accept="image/*"
-        style="display: none;"
-    >
-
-    <button
-        type="button"
-        id="changeProfileImage"
-        class="btn btn-outline-success profile-upload-btn"
-    >
-        Upload Picture
-    </button>
-
-</div>
-
-                <div class="profile-main-details">
-
-                    <h3 id="profileName">Loading...</h3>
-
-                    <p class="profile-subtitle">
-                        GiveHand Community Member
-                    </p>
+                    </div>
 
 
-                    <div class="profile-information">
+                    <button type="button"
+                            id="editProfileButton"
+                            class="profile-edit-button">
 
-                        <div class="profile-field">
+                        Edit Profile
 
-                            <span class="profile-field-label">
-                                Full Name
-                            </span>
+                    </button>
 
-                            <span class="profile-field-value">
-                                <span id="fullName"></span>
-                            </span>
-
-                        </div>
+                </div>
 
 
-                        <div class="profile-field">
+                <div class="profile-details-row">
 
-                            <span class="profile-field-label">
+                    <div class="profile-detail">
+
+                        <span class="profile-detail-icon">
+                            👤
+                        </span>
+
+                        <div>
+
+                            <span class="profile-detail-label">
                                 Username
                             </span>
 
-                            <span class="profile-field-value">
-                                <span id="username"></span>
-                            </span>
-
-                        </div>
-
-
-                        <div class="profile-field">
-
-                            <span class="profile-field-label">
-                                Email Address
-                            </span>
-
-                            <span class="profile-field-value">
-                               <span id="email"></span>
+                            <span id="username"
+                                  class="profile-detail-value">
                             </span>
 
                         </div>
@@ -143,19 +111,46 @@
                     </div>
 
 
-    <div class="profile-actions">
+                    <div class="profile-detail">
 
-        <a href="/feed"
-         class="btn btn-success">
-            Back to Feed
-        </a>
+                        <span class="profile-detail-icon">
+                            ✉
+                        </span>
 
-        <a href="/login"
-        class="btn profile-logout">
-         Log Out
-        </a>
+                        <div>
 
-    </div>
+                            <span class="profile-detail-label">
+                                Email
+                            </span>
+
+                            <span id="email"
+                                  class="profile-detail-value">
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="profile-detail">
+
+                        <span class="profile-detail-icon">
+                            👤
+                        </span>
+
+                        <div>
+
+                            <span class="profile-detail-label">
+                                Full Name
+                            </span>
+
+                            <span id="fullName"
+                                  class="profile-detail-value">
+                            </span>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
@@ -163,116 +158,598 @@
 
         </div>
 
+
+        <div class="profile-buttons-row">
+
+            <a href="/feed"
+               class="btn profile-back-button">
+                ← Back to Feed
+            </a>
+
+            <button type="button"
+                    id="logoutButton"
+                    class="btn profile-logout">
+                Log Out
+            </button>
+
+        </div>
+
+
+
+        <div class="profile-project-section">
+
+            <div class="profile-section-header">
+
+                <div>
+
+                    <h3>
+                        My Projects
+                    </h3>
+
+                    <p>
+                        Projects that you posted on GiveHand.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div id="createdProjects"
+                 class="profile-project-list">
+            </div>
+
+        </div>
+
+
+
+        <div class="profile-project-section">
+
+            <div class="profile-section-header">
+
+                <div>
+
+                    <h3>
+                        Joined Projects
+                    </h3>
+
+                    <p>
+                        Projects where you signed up to volunteer.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div id="joinedProjects"
+                 class="profile-project-list">
+            </div>
+
+        </div>
+
+
     </div>
 
 </main>
+
+
+
+<div id="editProfileModal"
+     class="profile-edit-overlay"
+     style="display: none;">
+
+    <div class="profile-edit-modal">
+
+        <div class="profile-edit-header">
+
+            <div>
+
+                <h3>
+                    Edit Profile
+                </h3>
+
+                <p>
+                    Update your personal details.
+                </p>
+
+            </div>
+
+            <button type="button"
+                    id="closeProfileEdit"
+                    class="profile-modal-close">
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="editProfileForm">
+
+            <div class="profile-edit-field">
+
+                <label>
+                    Full Name
+                </label>
+
+                <input type="text"
+                       id="editFullName"
+                       class="form-control">
+
+            </div>
+
+
+            <div class="profile-edit-field">
+
+                <label>
+                    Email
+                </label>
+
+                <input type="email"
+                       id="editEmail"
+                       class="form-control">
+
+            </div>
+
+
+            <div class="profile-edit-field">
+
+                <label>
+                    Profile Picture
+                </label>
+
+                <input type="file"
+                       id="editProfileImage"
+                       class="form-control"
+                       accept="image/*">
+
+                <p class="profile-image-help">
+                    Leave empty to keep your current picture.
+                </p>
+
+            </div>
+
+
+            <p id="profileEditError"
+               class="error-text">
+            </p>
+
+
+            <div class="profile-edit-actions">
+
+                <button type="button"
+                        id="cancelProfileEdit"
+                        class="profile-edit-cancel">
+
+                    Cancel
+
+                </button>
+
+                <button type="submit"
+                        class="profile-edit-save">
+
+                    Save Changes
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
 <script>
 
-const fullName = localStorage.getItem("fullName");
-const username = localStorage.getItem("username");
-const email = localStorage.getItem("email");
-
-const profileImageInput =
-    document.getElementById("profileImageInput");
-
-const changeProfileImage =
-    document.getElementById("changeProfileImage");
-
-const profileAvatar =
-    document.getElementById("profileAvatar");
+let currentUser = null;
 
 
-changeProfileImage.addEventListener("click", function () {
-    profileImageInput.click();
-});
+async function loadProfile() {
+
+    const response =
+        await fetch("/api/profile");
+
+    const user =
+        await response.json();
 
 
-profileImageInput.addEventListener("change", function () {
+    if (!response.ok) {
 
-    const file = profileImageInput.files[0];
+        window.location.href =
+            "/login";
 
-    if (!file) {
         return;
     }
 
-    if (!file.type.startsWith("image/")) {
-        return;
-    }
 
-    const reader = new FileReader();
+    currentUser = user;
 
-    reader.onload = function (event) {
-
-        const image = event.target.result;
-
-        profileAvatar.innerHTML = `
-            <img
-                src="${image}"
-                alt="Profile Picture"
-                style="
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                    border-radius: 50%;
-                "
-            >
-        `;
-
-        localStorage.setItem("profileImage", image);
-    };
-
-    reader.readAsDataURL(file);
-});
-
-
-const savedProfileImage =
-    localStorage.getItem("profileImage");
-
-if (savedProfileImage) {
-
-    profileAvatar.innerHTML = `
-        <img
-            src="${savedProfileImage}"
-            alt="Profile Picture"
-            style="
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                border-radius: 50%;
-            "
-        >
-    `;
-
-}
-
-if (fullName) {
 
     document.getElementById("profileName").textContent =
-        fullName;
+        user.fullName;
 
     document.getElementById("fullName").textContent =
-        fullName;
-
-    document.querySelector(".profile-avatar").textContent =
-        fullName.charAt(0).toUpperCase();
-
-}
-
-if (username) {
+        user.fullName;
 
     document.getElementById("username").textContent =
-        username;
-
-}
-
-if (email) {
+        user.username;
 
     document.getElementById("email").textContent =
-        email;
+        user.email;
+
+
+    const avatar =
+        document.getElementById("profileAvatar");
+
+
+    if (user.profileImage) {
+
+        avatar.innerHTML = `
+
+            <img src="${user.profileImage}"
+                 alt="Profile Picture">
+
+        `;
+
+    }
+    else {
+
+        avatar.textContent =
+            user.fullName.charAt(0).toUpperCase();
+
+    }
 
 }
 
+
+async function loadCreatedProjects() {
+
+    const response =
+        await fetch("/api/profile/projects/created");
+
+    const projects =
+        await response.json();
+
+    if (!response.ok) {
+        return;
+    }
+
+    showProjects(
+        projects,
+        "createdProjects",
+        "You have not created any projects yet."
+    );
+}
+
+
+async function loadJoinedProjects() {
+
+    const response =
+        await fetch("/api/profile/projects/joined");
+
+    const projects =
+        await response.json();
+
+    if (!response.ok) {
+        return;
+    }
+
+    showProjects(
+        projects,
+        "joinedProjects",
+        "You have not joined any projects yet."
+    );
+}
+
+
+function showProjects(projects, elementId, emptyMessage) {
+
+    const list =
+        document.getElementById(elementId);
+
+    list.innerHTML = "";
+
+
+    if (projects.length === 0) {
+
+        list.innerHTML = `
+            <p style="color:#777; padding:15px;">
+                ${emptyMessage}
+            </p>
+        `;
+
+        return;
+    }
+
+
+    projects.forEach(function(project) {
+
+        const box =
+            document.createElement("div");
+
+        box.className =
+            "profile-project-row";
+
+
+        box.innerHTML = `
+
+            <div class="profile-project-photo">
+
+                ${project.image ? `
+
+                    <img src="${project.image}"
+                         alt="project image">
+
+                ` : `
+
+                    <div class="profile-project-no-image">
+                        ${project.category}
+                    </div>
+
+                `}
+
+            </div>
+
+
+            <div class="profile-project-main">
+
+                <h4>
+                    ${project.projectName}
+                </h4>
+
+                <div class="profile-project-meta">
+
+                    <span>
+                        📍 ${project.location}
+                    </span>
+
+                    <span>
+                        ● ${project.category}
+                    </span>
+
+                </div>
+
+                <p class="profile-project-description">
+                    ${project.description}
+                </p>
+
+            </div>
+
+
+            <div class="profile-project-count">
+
+                <strong>
+                    ${project.joined || 0}
+                    /
+                    ${project.volunteers}
+                </strong>
+
+                <span>
+                    Joined
+                </span>
+
+            </div>
+
+
+            <div class="profile-project-view">
+
+                <a href="/join-project/${project._id}"
+                   class="btn profile-view-button">
+
+                    View Project
+
+                </a>
+
+            </div>
+
+        `;
+
+        list.appendChild(box);
+
+    });
+
+}
+
+
+
+const editModal =
+    document.getElementById("editProfileModal");
+
+
+document
+    .getElementById("editProfileButton")
+    .addEventListener("click", function() {
+
+        document.getElementById("editFullName").value =
+            currentUser.fullName || "";
+
+        document.getElementById("editEmail").value =
+            currentUser.email || "";
+
+        document.getElementById("profileEditError").textContent =
+            "";
+
+        editModal.style.display =
+            "flex";
+
+    });
+
+
+
+function closeEditProfile() {
+
+    editModal.style.display =
+        "none";
+
+    document.getElementById("editProfileImage").value =
+        "";
+
+}
+
+
+document
+    .getElementById("closeProfileEdit")
+    .addEventListener(
+        "click",
+        closeEditProfile
+    );
+
+
+document
+    .getElementById("cancelProfileEdit")
+    .addEventListener(
+        "click",
+        closeEditProfile
+    );
+
+
+
+document
+    .getElementById("editProfileForm")
+    .addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+
+        const fullName =
+            document
+                .getElementById("editFullName")
+                .value
+                .trim();
+
+
+        const email =
+            document
+                .getElementById("editEmail")
+                .value
+                .trim();
+
+
+        const image =
+            document
+                .getElementById("editProfileImage")
+                .files[0];
+
+
+        const errorBox =
+            document.getElementById("profileEditError");
+
+
+        errorBox.textContent =
+            "";
+
+
+        if (fullName.length < 2) {
+
+            errorBox.textContent =
+                "Please enter your full name.";
+
+            return;
+        }
+
+
+        if (
+            !email.includes("@") ||
+            !email.includes(".")
+        ) {
+
+            errorBox.textContent =
+                "Please enter a valid email.";
+
+            return;
+        }
+
+
+        const data =
+            new FormData();
+
+
+        data.append(
+            "fullName",
+            fullName
+        );
+
+
+        data.append(
+            "email",
+            email
+        );
+
+
+        if (image) {
+
+            data.append(
+                "profileImage",
+                image
+            );
+
+        }
+
+
+        const response =
+            await fetch(
+                "/api/profile",
+                {
+                    method: "PUT",
+                    body: data
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            errorBox.textContent =
+                result.error ||
+                "Could not update profile.";
+
+            return;
+
+        }
+
+
+        closeEditProfile();
+
+        await loadProfile();
+
+    });
+
+
+
+document
+    .getElementById("logoutButton")
+    .addEventListener("click", async function() {
+
+        const response =
+            await fetch(
+                "/logout",
+                {
+                    method: "POST"
+                }
+            );
+
+
+        if (response.ok) {
+
+            window.location.href =
+                "/login";
+
+        }
+
+    });
+
+
+loadProfile();
+loadCreatedProjects();
+loadJoinedProjects();
+
 </script>
+
 </body>
 
 </html>

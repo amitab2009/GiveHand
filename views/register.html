@@ -228,9 +228,6 @@ form.addEventListener("submit", async function(event) {
         return;
     }
 if (data.success) {
-    localStorage.setItem("fullName", fullName);
-    localStorage.setItem("username", username);
-    localStorage.setItem("email", email);
     window.location.href = "/feed";
 }
 });

@@ -92,6 +92,10 @@
                    class="details-location">
                 </p>
 
+                <p id="projectOwner"
+                   class="details-owner">
+                </p>
+
                 <h5>About this project</h5>
 
                 <p id="projectDescription"
@@ -176,13 +180,24 @@
                 <p id="joinMessage"
                    class="join-message">
                 </p>
-                <button id="deleteButton"
-        class="btn btn-danger details-join-button"
-        style="display: none;">
 
-    Delete Project
 
-</button>
+               <div class="owner-project-actions">
+
+              <button id="editButton"
+                class="owner-action-button edit-project-button"
+                 style="display: none;">
+                  Edit
+               </button>
+
+              <button id="deleteButton"
+                class="owner-action-button delete-project-button"
+                 style="display: none;">
+                 Delete
+
+                </button>
+
+</div>
 
             </div>
 
@@ -212,6 +227,9 @@ const cancelButton =
 
 const joinMessage =
     document.getElementById("joinMessage");
+
+const editButton =
+    document.getElementById("editButton");
 
 const deleteButton =
     document.getElementById("deleteButton");
@@ -243,42 +261,6 @@ function getJoinedProjects() {
 }
 
 
-function alreadyJoined() {
-
-    const joinedProjects = getJoinedProjects();
-
-    return joinedProjects.includes(projectId);
-}
-
-
-function saveJoinedProject() {
-
-    const joinedProjects = getJoinedProjects();
-
-    if (!joinedProjects.includes(projectId)) {
-        joinedProjects.push(projectId);
-    }
-
-    localStorage.setItem(
-        "joinedProjects",
-        JSON.stringify(joinedProjects)
-    );
-}
-
-function removeJoinedProject() {
-
-    let joinedProjects = getJoinedProjects();
-
-    joinedProjects =
-        joinedProjects.filter(function(id) {
-            return id !== projectId;
-        });
-
-    localStorage.setItem(
-        "joinedProjects",
-        JSON.stringify(joinedProjects)
-    );
-}
 
 
 
@@ -286,7 +268,12 @@ function showProject(project) {
 
     currentProject = project;
     
-    deleteButton.style.display = "none";
+
+    editButton.style.display =
+    project.isOwner ? "block" : "none";   
+
+    deleteButton.style.display =
+    project.isOwner ? "block" : "none";
 
     const joined = project.joined || 0;
     const needed = project.volunteers || 0;
@@ -299,6 +286,9 @@ function showProject(project) {
 
     document.getElementById("projectLocation").textContent =
         "📍 " + project.location;
+
+    document.getElementById("projectOwner").textContent =
+        "Organized by @" + (project.createdByUsername || "Unknown user");
 
     document.getElementById("projectCategory").textContent =
         project.category;
@@ -352,12 +342,13 @@ function showProject(project) {
     }
 
 
-   if (alreadyJoined()) {
+  if (project.currentUserJoined) {
 
     joinButton.style.display = "none";
 
     cancelButton.style.display = "block";
     cancelButton.disabled = false;
+    cancelButton.textContent = "Cancel Joining";
 }
 else if (placesLeft === 0) {
 
@@ -371,11 +362,13 @@ else {
 
     joinButton.style.display = "block";
     joinButton.disabled = false;
-    joinButton.textContent =
-        "Join This Project";
+    joinButton.textContent = "Join This Project";
 
     cancelButton.style.display = "none";
 }
+
+
+
 
     loadingMessage.classList.add("d-none");
     projectDetails.classList.remove("d-none");
@@ -425,9 +418,10 @@ joinButton.addEventListener("click", async function() {
             throw new Error(result.error);
         }
 
-        saveJoinedProject();
+        
+        
 
-        showProject(result.project);
+        await loadProject();
 
         joinMessage.textContent =
             "You joined the project successfully!";
@@ -463,11 +457,9 @@ cancelButton.addEventListener("click", async function() {
             throw new Error(result.error);
         }
 
-        removeJoinedProject();
-
         cancelButton.textContent = "Cancel Joining";
 
-        showProject(result.project);
+     await loadProject();
 
         joinMessage.textContent =
             "Your registration was cancelled.";
@@ -482,6 +474,43 @@ cancelButton.addEventListener("click", async function() {
 
 });
 
+editButton.addEventListener("click", function() {
+
+    window.location.href =
+        "/edit-project/" + projectId;
+
+});
+
+
+deleteButton.addEventListener("click", async function() {
+
+    const confirmed =
+        confirm("Are you sure you want to delete this project?");
+
+    if (!confirmed) {
+        return;
+    }
+
+    const response = await fetch(
+        "/api/projects/" + projectId,
+        {
+            method: "DELETE"
+        }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+
+        joinMessage.textContent =
+            result.error || "Could not delete project";
+
+        return;
+    }
+
+    window.location.href = "/profile";
+
+});
 
 loadProject();
 
