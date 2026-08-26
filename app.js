@@ -591,7 +591,19 @@ app.get("/feed", function(req, res) {
 
 });
 
+// groups page
 
+app.get("/groups", function(req, res) {
+
+    res.sendFile(
+        path.join(
+            __dirname,
+            "views",
+            "groups.html"
+        )
+    );
+
+});
 
 // edit project page
 
@@ -1651,5 +1663,710 @@ app.delete(
     }
 );
 
+// =========================================
+// GROUPS SYSTEM
+// =========================================
 
+const DEFAULT_GROUPS = [
+    {
+        name: "חלוקת משלוחים לחיילים",
+        description: "קבוצה למתנדבים שרוצים לעזור בחלוקת משלוחים ומארזים לחיילים.",
+        emoji: "🎖️"
+    },
+    {
+        name: "עזרה לניצולי שואה",
+        description: "קבוצה למתנדבים שרוצים לעזור ולתמוך בניצולי שואה.",
+        emoji: "🕊️"
+    },
+    {
+        name: "חלוקת מארזי ממתקים בבתי חולים",
+        description: "קבוצה למתנדבים שרוצים לשמח ילדים ומטופלים בבתי חולים.",
+        emoji: "🍬"
+    },
+    {
+        name: "הצלת בעלי חיים",
+        description: "קבוצה למתנדבים שרוצים לעזור לבעלי חיים ולפעול למענם.",
+        emoji: "🐾"
+    }
+];
+
+
+// -----------------------------------------
+// Create the 4 permanent groups
+// -----------------------------------------
+
+async function createDefaultGroups() {
+
+    for (const group of DEFAULT_GROUPS) {
+
+        await db.collection("groups").updateOne(
+
+            {
+                name: group.name,
+                isDefault: true
+            },
+
+            {
+                $setOnInsert: {
+                    name: group.name,
+                    description: group.description,
+                    emoji: group.emoji,
+                    isDefault: true,
+                    members: [],
+                    createdBy: null,
+                    createdAt: new Date()
+                }
+            },
+
+            {
+                upsert: true
+            }
+        );
+    }
+}
+
+
+// -----------------------------------------
+// Get all groups
+// -----------------------------------------
+
+app.get("/api/groups", async function(req, res) {
+
+    try {
+
+        const userId = req.session.userId;
+
+        if (!userId) {
+            return res.status(401).json({
+                error: "You must be logged in"
+            });
+        }
+
+        await createDefaultGroups();
+
+        const groups = await db
+            .collection("groups")
+            .find({})
+            .sort({
+                isDefault: -1,
+                createdAt: 1
+            })
+            .toArray();
+
+        const result = groups.map(function(group) {
+
+            const members = group.members || [];
+
+            const isMember = members.some(function(memberId) {
+
+                return memberId.toString() === userId.toString();
+
+            });
+
+           return {
+    _id: group._id,
+    name: group.name,
+    description: group.description,
+    emoji: group.emoji,
+    isDefault: group.isDefault,
+    createdBy: group.createdBy,
+    memberCount: members.length,
+    isMember: isMember
+};
+
+        });
+
+        res.json(result);
+
+    }
+    catch (error) {
+
+        console.log("GET GROUPS ERROR:", error);
+
+        res.status(500).json({
+            error: "Could not load groups"
+        });
+
+    }
+
+});
+
+
+// -----------------------------------------
+// Create a new group
+// -----------------------------------------
+
+app.post("/api/groups", async function(req, res) {
+
+    try {
+
+        const userId = req.session.userId;
+
+        if (!userId) {
+            return res.status(401).json({
+                error: "You must be logged in"
+            });
+        }
+
+        const name = String(
+            req.body.name || ""
+        ).trim();
+
+        const description = String(
+            req.body.description || ""
+        ).trim();
+
+        if (!name) {
+            return res.status(400).json({
+                error: "Please enter a group name"
+            });
+        }
+
+        const existingGroup = await db
+            .collection("groups")
+            .findOne({
+                name: name
+            });
+
+        if (existingGroup) {
+            return res.status(400).json({
+                error: "A group with this name already exists"
+            });
+        }
+
+        const newGroup = {
+
+            name: name,
+
+            description: description,
+
+            emoji: "👥",
+
+            isDefault: false,
+
+            members: [
+                new ObjectId(userId)
+            ],
+
+            createdBy:
+                new ObjectId(userId),
+
+            createdAt:
+                new Date()
+
+        };
+
+        const result = await db
+            .collection("groups")
+            .insertOne(newGroup);
+
+        res.json({
+
+            success: true,
+
+            group: {
+                ...newGroup,
+
+                _id: result.insertedId,
+
+                memberCount: 1,
+
+                isMember: true
+            }
+
+        });
+
+    }
+    catch (error) {
+
+        console.log(
+            "CREATE GROUP ERROR:",
+            error
+        );
+
+        res.status(500).json({
+            error: "Could not create group"
+        });
+
+    }
+
+});
+
+
+// -----------------------------------------
+// Join group
+// -----------------------------------------
+
+app.post("/api/groups/:id/join", async function(req, res) {
+
+    try {
+
+        const userId = req.session.userId;
+
+        if (!userId) {
+            return res.status(401).json({
+                error: "You must be logged in"
+            });
+        }
+
+        const groupId = req.params.id;
+
+        if (!ObjectId.isValid(groupId)) {
+            return res.status(400).json({
+                error: "Invalid group ID"
+            });
+        }
+
+        const result = await db
+            .collection("groups")
+            .updateOne(
+
+                {
+                    _id: new ObjectId(groupId)
+                },
+
+                {
+                    $addToSet: {
+                        members: new ObjectId(userId)
+                    }
+                }
+
+            );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({
+                error: "Group not found"
+            });
+        }
+
+        res.json({
+            success: true
+        });
+
+    }
+    catch (error) {
+
+        console.log(
+            "JOIN GROUP ERROR:",
+            error
+        );
+
+        res.status(500).json({
+            error: "Could not join group"
+        });
+
+    }
+
+});
+
+
+// -----------------------------------------
+// Leave group
+// -----------------------------------------
+
+app.post("/api/groups/:id/leave", async function(req, res) {
+
+    try {
+
+        const userId = req.session.userId;
+
+        if (!userId) {
+            return res.status(401).json({
+                error: "You must be logged in"
+            });
+        }
+
+        const groupId = req.params.id;
+
+        if (!ObjectId.isValid(groupId)) {
+            return res.status(400).json({
+                error: "Invalid group ID"
+            });
+        }
+
+        await db
+            .collection("groups")
+            .updateOne(
+
+                {
+                    _id: new ObjectId(groupId)
+                },
+
+                {
+                    $pull: {
+                        members: new ObjectId(userId)
+                    }
+                }
+
+            );
+
+        res.json({
+            success: true
+        });
+
+    }
+    catch (error) {
+
+        console.log(
+            "LEAVE GROUP ERROR:",
+            error
+        );
+
+        res.status(500).json({
+            error: "Could not leave group"
+        });
+
+    }
+
+});
+
+
+// =========================================
+// DELETE GROUP
+// Only the creator can delete the group
+// =========================================
+
+app.delete("/api/groups/:id", async function(req, res) {
+
+    try {
+
+        const userId =
+            req.session.userId;
+
+
+        if (!userId) {
+
+            return res.status(401).json({
+
+                error:
+                    "You must be logged in"
+
+            });
+
+        }
+
+
+        const groupId =
+            req.params.id;
+
+
+        if (!ObjectId.isValid(groupId)) {
+
+            return res.status(400).json({
+
+                error:
+                    "Invalid group ID"
+
+            });
+
+        }
+
+
+        const group =
+            await db
+                .collection("groups")
+                .findOne({
+
+                    _id:
+                        new ObjectId(groupId)
+
+                });
+
+
+        if (!group) {
+
+            return res.status(404).json({
+
+                error:
+                    "Group not found"
+
+            });
+
+        }
+
+
+        // Permanent groups cannot be deleted
+
+        if (group.isDefault === true) {
+
+            return res.status(403).json({
+
+                error:
+                    "Permanent groups cannot be deleted"
+
+            });
+
+        }
+
+
+        // Only the creator can delete
+
+        if (
+            !group.createdBy ||
+            group.createdBy.toString() !==
+            userId.toString()
+        ) {
+
+            return res.status(403).json({
+
+                error:
+                    "Only the creator can delete this group"
+
+            });
+
+        }
+
+
+        // Delete the group
+
+        await db
+            .collection("groups")
+            .deleteOne({
+
+                _id:
+                    new ObjectId(groupId)
+
+            });
+
+
+        // Delete all messages belonging to it
+
+        await db
+            .collection("groupMessages")
+            .deleteMany({
+
+                groupId:
+                    new ObjectId(groupId)
+
+            });
+
+
+        res.json({
+
+            success:
+                true
+
+        });
+
+    }
+    catch (error) {
+
+        console.log(
+            "DELETE GROUP ERROR:",
+            error
+        );
+
+
+        res.status(500).json({
+
+            error:
+                "Could not delete group"
+
+        });
+
+    }
+
+});
+
+
+// -----------------------------------------
+// Get messages
+// -----------------------------------------
+
+app.get("/api/groups/:id/messages", async function(req, res) {
+
+    try {
+
+        const userId = req.session.userId;
+
+        if (!userId) {
+            return res.status(401).json({
+                error: "You must be logged in"
+            });
+        }
+
+        const groupId = req.params.id;
+
+        if (!ObjectId.isValid(groupId)) {
+            return res.status(400).json({
+                error: "Invalid group ID"
+            });
+        }
+
+        const group = await db
+            .collection("groups")
+            .findOne({
+                _id: new ObjectId(groupId)
+            });
+
+        if (!group) {
+            return res.status(404).json({
+                error: "Group not found"
+            });
+        }
+
+        const members = group.members || [];
+
+        const isMember = members.some(function(memberId) {
+
+            return memberId.toString() === userId.toString();
+
+        });
+
+        if (!isMember) {
+            return res.status(403).json({
+                error: "You must join this group first"
+            });
+        }
+
+        const messages = await db
+            .collection("groupMessages")
+            .find({
+                groupId: new ObjectId(groupId)
+            })
+            .sort({
+                createdAt: 1
+            })
+            .toArray();
+
+        res.json(messages);
+
+    }
+    catch (error) {
+
+        console.log(
+            "GET GROUP MESSAGES ERROR:",
+            error
+        );
+
+        res.status(500).json({
+            error: "Could not load messages"
+        });
+
+    }
+
+});
+
+
+// -----------------------------------------
+// Send message
+// -----------------------------------------
+
+app.post("/api/groups/:id/messages", async function(req, res) {
+
+    try {
+
+        const userId = req.session.userId;
+
+        if (!userId) {
+            return res.status(401).json({
+                error: "You must be logged in"
+            });
+        }
+
+        const groupId = req.params.id;
+
+        if (!ObjectId.isValid(groupId)) {
+            return res.status(400).json({
+                error: "Invalid group ID"
+            });
+        }
+
+        const text = String(
+            req.body.text || ""
+        ).trim();
+
+        if (!text) {
+            return res.status(400).json({
+                error: "Message cannot be empty"
+            });
+        }
+
+        const group = await db
+            .collection("groups")
+            .findOne({
+                _id: new ObjectId(groupId)
+            });
+
+        if (!group) {
+            return res.status(404).json({
+                error: "Group not found"
+            });
+        }
+
+        const members = group.members || [];
+
+        const isMember = members.some(function(memberId) {
+
+            return memberId.toString() === userId.toString();
+
+        });
+
+        if (!isMember) {
+            return res.status(403).json({
+                error: "You must join this group first"
+            });
+        }
+
+        const user = await db
+            .collection("users")
+            .findOne({
+                _id: new ObjectId(userId)
+            });
+
+        if (!user) {
+            return res.status(404).json({
+                error: "User not found"
+            });
+        }
+
+        const message = {
+
+            groupId:
+                new ObjectId(groupId),
+
+            userId:
+                new ObjectId(userId),
+
+            username:
+                user.username,
+
+            text:
+                text,
+
+            createdAt:
+                new Date()
+
+        };
+
+        const result = await db
+            .collection("groupMessages")
+            .insertOne(message);
+
+        res.json({
+
+            success: true,
+
+            message: {
+                ...message,
+                _id: result.insertedId
+            }
+
+        });
+
+    }
+    catch (error) {
+
+        console.log(
+            "SEND GROUP MESSAGE ERROR:",
+            error
+        );
+
+        res.status(500).json({
+            error: "Could not send message"
+        });
+
+    }
+
+});
 app.listen(3000);
