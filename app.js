@@ -1,5 +1,6 @@
 require("dotenv").config();
 const multer = require("multer");
+const { v2: cloudinary } = require("cloudinary");
 const { MongoClient, ObjectId } = require("mongodb");
 const express = require("express");
 const path = require("path");
@@ -7,9 +8,39 @@ const uri = process.env.MONGO_URI;
 const client = new MongoClient(uri);
 const app = express();
 const upload = multer({
-    dest: "public/uploads/"
+    storage: multer.memoryStorage()
 });
 
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+function uploadImage(fileBuffer) {
+
+    return new Promise(function(resolve, reject) {
+
+        const stream = cloudinary.uploader.upload_stream(
+            {
+                folder: "givehand"
+            },
+            function(error, result) {
+
+                if (error) {
+                    reject(error);
+                }
+                else {
+                    resolve(result);
+                }
+
+            }
+        );
+
+        stream.end(fileBuffer);
+
+    });
+}
 
 let db;const crypto = require("crypto");
 
@@ -232,34 +263,53 @@ app.get("/create-project", function(req, res) {
 
 app.post("/create-project", upload.single("image"), async function(req, res) {
 
-    const projectName = req.body.projectName;
-    const description = req.body.description;
-    const location = req.body.location;
-    const category = req.body.category;
-    const volunteers = req.body.volunteers;
-    const contact = req.body.contact;
+    try {
+
+        const projectName = req.body.projectName;
+        const description = req.body.description;
+        const location = req.body.location;
+        const category = req.body.category;
+        const volunteers = req.body.volunteers;
+        const contact = req.body.contact;
 
 
-    let image = "";
+        let image = "";
 
-    if (req.file) {
-        image = "/uploads/" + req.file.filename;
+        if (req.file) {
+
+            const uploadedImage =
+                await uploadImage(req.file.buffer);
+
+            image = uploadedImage.secure_url;
+        }
+
+        const newProject = {
+            projectName: projectName,
+            description: description,
+            location: location,
+            category: category,
+            volunteers: Number(volunteers),
+            contact: contact,
+            image: image,
+            joined: 0,
+            createdBy: null
+        };
+
+
+        await db.collection("projects").insertOne(newProject);
+
+        res.json({ success: true });
+
     }
-const newProject = {
-    projectName: projectName,
-    description: description,
-    location: location,
-    category: category,
-    volunteers: Number(volunteers),
-    contact: contact,
-    image: image,
-    joined: 0,
-    createdBy: null
-};
+    catch (error) {
 
-    await db.collection("projects").insertOne(newProject);
+        console.log(error);
 
-    res.json({ success: true });
+        res.status(500).json({
+            error: "Could not create project"
+        });
+    }
+
 });
 
 // profile
