@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta name="viewport"
@@ -13,9 +14,186 @@
           rel="stylesheet">
 
     <link rel="stylesheet" href="/css/style.css">
+
+
+    <!-- DELETE MODAL STYLE -->
+    <style>
+
+        .delete-confirm-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(30, 25, 50, 0.55);
+            backdrop-filter: blur(5px);
+
+            display: none;
+
+            align-items: center;
+            justify-content: center;
+
+            z-index: 9999;
+
+            padding: 20px;
+        }
+
+
+        .delete-confirm-overlay.show {
+            display: flex;
+
+            animation: deleteOverlayIn 0.2s ease;
+        }
+
+
+        .delete-confirm-modal {
+            width: 100%;
+            max-width: 430px;
+
+            background: white;
+
+            border-radius: 24px;
+
+            padding: 32px;
+
+            text-align: center;
+
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.25);
+
+            animation: deleteModalIn 0.25s ease;
+        }
+
+
+        .delete-confirm-icon {
+            width: 65px;
+            height: 65px;
+
+            margin: 0 auto 18px;
+
+            border-radius: 50%;
+
+            background: #fff0f1;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 30px;
+
+            color: #dc3545;
+        }
+
+
+        .delete-confirm-modal h3 {
+            margin: 0 0 10px;
+
+            font-size: 21px;
+
+            font-weight: 800;
+
+            color: #302b43;
+
+            line-height: 1.3;
+        }
+
+
+        .delete-confirm-modal p {
+            margin: 0 0 25px;
+
+            color: #777;
+
+            font-size: 14px;
+        }
+
+
+        .delete-confirm-actions {
+            display: flex;
+
+            gap: 12px;
+        }
+
+
+        .delete-confirm-actions button {
+            flex: 1;
+
+            border: none;
+
+            border-radius: 13px;
+
+            padding: 12px 18px;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+
+        .delete-confirm-cancel {
+            background: #f1f0f5;
+
+            color: #555;
+        }
+
+
+        .delete-confirm-cancel:hover {
+            background: #e4e2ea;
+        }
+
+
+        .delete-confirm-delete {
+            background: #dc3545;
+
+            color: white;
+        }
+
+
+        .delete-confirm-delete:hover {
+            background: #bb2d3b;
+        }
+
+
+        @keyframes deleteOverlayIn {
+
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+
+        }
+
+
+        @keyframes deleteModalIn {
+
+            from {
+                opacity: 0;
+
+                transform:
+                    translateY(10px)
+                    scale(0.96);
+            }
+
+            to {
+                opacity: 1;
+
+                transform:
+                    translateY(0)
+                    scale(1);
+            }
+
+        }
+
+    </style>
+
 </head>
 
+
 <body>
+
 
 <nav class="navbar navbar-expand-lg">
 
@@ -25,21 +203,32 @@
             GiveHand
         </a>
 
+
         <div>
+
             <a href="/feed"
                class="btn btn-outline-light">
+
                 Feed
+
             </a>
+
 
             <a href="#"
                class="btn btn-outline-light">
+
                 Groups
+
             </a>
+
 
             <a href="#"
                class="btn btn-outline-light">
+
                 Profile
+
             </a>
+
         </div>
 
     </div>
@@ -47,119 +236,175 @@
 </nav>
 
 
+
 <main class="project-details-page">
 
     <div class="container">
 
-        <a href="/feed" class="back-to-feed">
+
+        <a href="/feed"
+           class="back-to-feed">
+
             ← Back to Feed
+
         </a>
 
-        <div id="loadingMessage" class="project-loading">
+
+        <div id="loadingMessage"
+             class="project-loading">
+
             Loading project...
+
         </div>
+
 
         <div id="projectDetails"
              class="project-details-card d-none">
 
+
             <div class="details-image-side">
+
 
                 <img id="projectImage"
                      class="details-image"
                      alt="Project image">
 
+
                 <div id="projectImagePlaceholder"
                      class="details-image-placeholder">
 
+
                     <span id="projectCategoryImage">
+
                         Community
+
                     </span>
 
+
                 </div>
+
 
             </div>
 
 
+
             <div class="details-content">
+
 
                 <span id="projectCategory"
                       class="details-category">
                 </span>
 
+
                 <h1 id="projectName"></h1>
+
 
                 <p id="projectLocation"
                    class="details-location">
                 </p>
 
+
                 <p id="projectOwner"
                    class="details-owner">
                 </p>
 
-                <h5>About this project</h5>
+
+                <h5>
+                    About this project
+                </h5>
+
 
                 <p id="projectDescription"
                    class="details-description">
                 </p>
 
 
+
                 <div class="details-boxes">
 
+
                     <div class="details-small-box">
+
 
                         <span class="details-icon">
                             👥
                         </span>
 
+
                         <div>
+
 
                             <p class="details-label">
                                 Volunteers joined
                             </p>
 
+
                             <h3>
-                                <span id="joinedCount">0</span>
+
+                                <span id="joinedCount">
+                                    0
+                                </span>
+
                                 /
-                                <span id="volunteersNeeded">0</span>
+
+                                <span id="volunteersNeeded">
+                                    0
+                                </span>
+
                             </h3>
 
+
                         </div>
+
 
                     </div>
 
 
+
                     <div class="details-small-box">
+
 
                         <span class="details-icon">
                             ☎️
                         </span>
 
+
                         <div>
+
 
                             <p class="details-label">
                                 Organizer contact
                             </p>
 
+
                             <h6 id="projectContact"></h6>
+
 
                         </div>
 
+
                     </div>
+
 
                 </div>
 
 
+
                 <div class="volunteer-progress">
+
 
                     <div id="progressBar"
                          class="volunteer-progress-bar">
                     </div>
 
+
                 </div>
+
 
                 <p id="placesLeft"
                    class="places-left">
                 </p>
+
 
 
                 <button id="joinButton"
@@ -169,357 +414,836 @@
 
                 </button>
 
+
+
                 <button id="cancelButton"
-                 class="btn btn-danger details-join-button"
-                 style="display: none;">
+                        class="btn btn-danger details-join-button"
+                        style="display: none;">
 
-                Cancel Joining
+                    Cancel Joining
 
-              </button>
+                </button>
+
 
                 <p id="joinMessage"
                    class="join-message">
                 </p>
 
 
-               <div class="owner-project-actions">
 
-              <button id="editButton"
-                class="owner-action-button edit-project-button"
-                 style="display: none;">
-                  Edit
-               </button>
+                <div class="owner-project-actions">
 
-              <button id="deleteButton"
-                class="owner-action-button delete-project-button"
-                 style="display: none;">
-                 Delete
 
-                </button>
+                    <button id="editButton"
+                            class="owner-action-button edit-project-button"
+                            style="display: none;">
 
-</div>
+                        Edit
+
+                    </button>
+
+
+
+                    <button id="deleteButton"
+                            class="owner-action-button delete-project-button"
+                            style="display: none;">
+
+                        Delete
+
+                    </button>
+
+
+                </div>
+
 
             </div>
 
+
         </div>
+
 
     </div>
 
 </main>
 
 
+
+<!-- =========================
+     DELETE CONFIRMATION MODAL
+========================= -->
+
+
+<div id="deleteConfirmOverlay"
+     class="delete-confirm-overlay">
+
+
+    <div class="delete-confirm-modal">
+
+
+        <div class="delete-confirm-icon">
+
+            🗑️
+
+        </div>
+
+
+        <h3>
+
+            DO YOU SURE YOU WANNA
+            DELETE THIS PROJECT?
+
+        </h3>
+
+
+        <p>
+
+            This action cannot be undone.
+
+        </p>
+
+
+        <div class="delete-confirm-actions">
+
+
+            <button type="button"
+                    id="deleteCancelButton"
+                    class="delete-confirm-cancel">
+
+                CANCEL
+
+            </button>
+
+
+            <button type="button"
+                    id="deleteConfirmButton"
+                    class="delete-confirm-delete">
+
+                DELETE
+
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
 <script>
+
 
 const projectId =
     window.location.pathname.split("/").pop();
 
+
 const loadingMessage =
     document.getElementById("loadingMessage");
+
 
 const projectDetails =
     document.getElementById("projectDetails");
 
+
 const joinButton =
     document.getElementById("joinButton");
 
+
 const cancelButton =
-   document.getElementById("cancelButton");
+    document.getElementById("cancelButton");
+
 
 const joinMessage =
     document.getElementById("joinMessage");
 
+
 const editButton =
     document.getElementById("editButton");
+
 
 const deleteButton =
     document.getElementById("deleteButton");
 
+
 let currentProject = null;
+
 
 
 function getJoinedProjects() {
 
     try {
+
         const savedProjects =
             localStorage.getItem("joinedProjects");
 
+
         if (!savedProjects) {
+
             return [];
+
         }
 
-        const projects = JSON.parse(savedProjects);
+
+        const projects =
+            JSON.parse(savedProjects);
+
 
         if (!Array.isArray(projects)) {
+
             return [];
+
         }
 
+
         return projects;
+
     }
+
     catch (error) {
+
         return [];
+
     }
+
 }
-
-
 
 
 
 function showProject(project) {
 
+
     currentProject = project;
-    
+
 
     editButton.style.display =
-    project.isOwner ? "block" : "none";   
+        project.isOwner ? "block" : "none";
+
 
     deleteButton.style.display =
-    project.isOwner ? "block" : "none";
+        project.isOwner ? "block" : "none";
 
-    const joined = project.joined || 0;
-    const needed = project.volunteers || 0;
+
+    const joined =
+        project.joined || 0;
+
+
+    const needed =
+        project.volunteers || 0;
+
 
     const placesLeft =
-        Math.max(needed - joined, 0);
+        Math.max(
+            needed - joined,
+            0
+        );
+
 
     document.getElementById("projectName").textContent =
         project.projectName;
 
+
     document.getElementById("projectLocation").textContent =
         "📍 " + project.location;
 
+
     document.getElementById("projectOwner").textContent =
-        "Organized by @" + (project.createdByUsername || "Unknown user");
+        "Organized by @" +
+        (project.createdByUsername ||
+         "Unknown user");
+
 
     document.getElementById("projectCategory").textContent =
         project.category;
 
+
     document.getElementById("projectCategoryImage").textContent =
         project.category;
+
 
     document.getElementById("projectDescription").textContent =
         project.description;
 
+
     document.getElementById("projectContact").textContent =
         project.contact;
+
 
     document.getElementById("joinedCount").textContent =
         joined;
 
+
     document.getElementById("volunteersNeeded").textContent =
         needed;
 
+
     document.getElementById("placesLeft").textContent =
-        placesLeft + " volunteer places left";
+        placesLeft +
+        " volunteer places left";
+
 
 
     const progress =
+
         needed > 0
-            ? Math.min((joined / needed) * 100, 100)
+
+            ? Math.min(
+                (joined / needed) * 100,
+                100
+              )
+
             : 0;
+
+
 
     document.getElementById("progressBar").style.width =
         progress + "%";
 
 
+
     const image =
         document.getElementById("projectImage");
+
 
     const placeholder =
         document.getElementById(
             "projectImagePlaceholder"
         );
 
+
+
     if (project.image) {
 
-        image.src = project.image;
-        image.style.display = "block";
-        placeholder.style.display = "none";
+
+        image.src =
+            project.image;
+
+
+        image.style.display =
+            "block";
+
+
+        placeholder.style.display =
+            "none";
+
+
     }
+
     else {
 
-        image.style.display = "none";
-        placeholder.style.display = "flex";
+
+        image.style.display =
+            "none";
+
+
+        placeholder.style.display =
+            "flex";
+
     }
 
 
-  if (project.currentUserJoined) {
 
-    joinButton.style.display = "none";
+    if (project.currentUserJoined) {
 
-    cancelButton.style.display = "block";
-    cancelButton.disabled = false;
-    cancelButton.textContent = "Cancel Joining";
+
+        joinButton.style.display =
+            "none";
+
+
+        cancelButton.style.display =
+            "block";
+
+
+        cancelButton.disabled =
+            false;
+
+
+        cancelButton.textContent =
+            "Cancel Joining";
+
+
+    }
+
+
+    else if (placesLeft === 0) {
+
+
+        joinButton.style.display =
+            "block";
+
+
+        joinButton.disabled =
+            true;
+
+
+        joinButton.textContent =
+            "Project Full";
+
+
+        cancelButton.style.display =
+            "none";
+
+
+    }
+
+
+    else {
+
+
+        joinButton.style.display =
+            "block";
+
+
+        joinButton.disabled =
+            false;
+
+
+        joinButton.textContent =
+            "Join This Project";
+
+
+        cancelButton.style.display =
+            "none";
+
+    }
+
+
+
+    loadingMessage.classList.add(
+        "d-none"
+    );
+
+
+    projectDetails.classList.remove(
+        "d-none"
+    );
+
 }
-else if (placesLeft === 0) {
 
-    joinButton.style.display = "block";
-    joinButton.disabled = true;
-    joinButton.textContent = "Project Full";
-
-    cancelButton.style.display = "none";
-}
-else {
-
-    joinButton.style.display = "block";
-    joinButton.disabled = false;
-    joinButton.textContent = "Join This Project";
-
-    cancelButton.style.display = "none";
-}
-
-
-
-
-    loadingMessage.classList.add("d-none");
-    projectDetails.classList.remove("d-none");
-}
 
 
 async function loadProject() {
 
-    try {
-        const response = await fetch(
-            "/api/projects/" + projectId
-        );
 
-        const project = await response.json();
+    try {
+
+
+        const response =
+            await fetch(
+                "/api/projects/" +
+                projectId
+            );
+
+
+        const project =
+            await response.json();
+
 
         if (!response.ok) {
-            throw new Error(project.error);
+
+            throw new Error(
+                project.error
+            );
+
         }
 
+
         showProject(project);
+
+
     }
+
+
     catch (error) {
+
 
         loadingMessage.textContent =
             "The project could not be loaded.";
+
     }
+
 }
 
 
-joinButton.addEventListener("click", async function() {
 
-    joinButton.disabled = true;
-    joinButton.textContent = "Joining...";
-    joinMessage.textContent = "";
+joinButton.addEventListener(
+    "click",
+    async function() {
 
-    try {
-        const response = await fetch(
-            "/api/projects/" + projectId + "/join",
-            {
-                method: "POST"
-            }
-        );
 
-        const result = await response.json();
+        joinButton.disabled =
+            true;
 
-        if (!response.ok) {
-            throw new Error(result.error);
-        }
 
-        
-        
+        joinButton.textContent =
+            "Joining...";
 
-        await loadProject();
 
         joinMessage.textContent =
-            "You joined the project successfully!";
-    }
-    catch (error) {
+            "";
 
-        joinMessage.textContent = error.message;
 
-        if (currentProject) {
-            showProject(currentProject);
-        }
-    }
-});
 
-cancelButton.addEventListener("click", async function() {
+        try {
 
-    cancelButton.disabled = true;
-    cancelButton.textContent = "Cancelling...";
-    joinMessage.textContent = "";
 
-    try {
+            const response =
+                await fetch(
+                    "/api/projects/" +
+                    projectId +
+                    "/join",
+                    {
+                        method: "POST"
+                    }
+                );
 
-        const response = await fetch(
-            "/api/projects/" + projectId + "/leave",
-            {
-                method: "POST"
+
+            const result =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    result.error
+                );
+
             }
-        );
 
-        const result = await response.json();
 
-        if (!response.ok) {
-            throw new Error(result.error);
+            await loadProject();
+
+
+            joinMessage.textContent =
+                "You joined the project successfully!";
+
+
         }
 
-        cancelButton.textContent = "Cancel Joining";
 
-     await loadProject();
+        catch (error) {
+
+
+            joinMessage.textContent =
+                error.message;
+
+
+            if (currentProject) {
+
+                showProject(
+                    currentProject
+                );
+
+            }
+
+        }
+
+    }
+);
+
+
+
+cancelButton.addEventListener(
+    "click",
+    async function() {
+
+
+        cancelButton.disabled =
+            true;
+
+
+        cancelButton.textContent =
+            "Cancelling...";
+
 
         joinMessage.textContent =
-            "Your registration was cancelled.";
-    }
-    catch (error) {
-
-        cancelButton.disabled = false;
-        cancelButton.textContent = "Cancel Joining";
-
-        joinMessage.textContent = error.message;
-    }
-
-});
-
-editButton.addEventListener("click", function() {
-
-    window.location.href =
-        "/edit-project/" + projectId;
-
-});
+            "";
 
 
-deleteButton.addEventListener("click", async function() {
 
-    const confirmed =
-        confirm("Are you sure you want to delete this project?");
+        try {
 
-    if (!confirmed) {
-        return;
-    }
 
-    const response = await fetch(
-        "/api/projects/" + projectId,
-        {
-            method: "DELETE"
+            const response =
+                await fetch(
+                    "/api/projects/" +
+                    projectId +
+                    "/leave",
+                    {
+                        method: "POST"
+                    }
+                );
+
+
+            const result =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    result.error
+                );
+
+            }
+
+
+            cancelButton.textContent =
+                "Cancel Joining";
+
+
+            await loadProject();
+
+
+            joinMessage.textContent =
+                "Your registration was cancelled.";
+
+
         }
+
+
+        catch (error) {
+
+
+            cancelButton.disabled =
+                false;
+
+
+            cancelButton.textContent =
+                "Cancel Joining";
+
+
+            joinMessage.textContent =
+                error.message;
+
+        }
+
+    }
+);
+
+
+
+editButton.addEventListener(
+    "click",
+    function() {
+
+
+        window.location.href =
+            "/edit-project/" +
+            projectId;
+
+    }
+);
+
+
+
+/* =========================
+   CUSTOM DELETE MODAL
+========================= */
+
+
+const deleteConfirmOverlay =
+    document.getElementById(
+        "deleteConfirmOverlay"
     );
 
-    const result = await response.json();
 
-    if (!response.ok) {
+const deleteCancelButton =
+    document.getElementById(
+        "deleteCancelButton"
+    );
 
-        joinMessage.textContent =
-            result.error || "Could not delete project";
 
-        return;
+const deleteConfirmButton =
+    document.getElementById(
+        "deleteConfirmButton"
+    );
+
+
+
+/*
+   When the user clicks Delete,
+   open our custom modal instead
+   of the browser confirm().
+*/
+
+
+deleteButton.addEventListener(
+    "click",
+    function() {
+
+
+        deleteConfirmOverlay.classList.add(
+            "show"
+        );
+
     }
+);
 
-    window.location.href = "/profile";
 
-});
+
+/*
+   Cancel button
+*/
+
+
+deleteCancelButton.addEventListener(
+    "click",
+    function() {
+
+
+        deleteConfirmOverlay.classList.remove(
+            "show"
+        );
+
+    }
+);
+
+
+
+/*
+   Clicking outside the modal
+   also closes it.
+*/
+
+
+deleteConfirmOverlay.addEventListener(
+    "click",
+    function(event) {
+
+
+        if (
+            event.target ===
+            deleteConfirmOverlay
+        ) {
+
+
+            deleteConfirmOverlay.classList.remove(
+                "show"
+            );
+
+        }
+
+    }
+);
+
+
+
+/*
+   Actual project deletion
+*/
+
+
+deleteConfirmButton.addEventListener(
+    "click",
+    async function() {
+
+
+        deleteConfirmButton.disabled =
+            true;
+
+
+        deleteConfirmButton.textContent =
+            "DELETING...";
+
+
+
+        try {
+
+
+            const response =
+                await fetch(
+                    "/api/projects/" +
+                    projectId,
+                    {
+                        method: "DELETE"
+                    }
+                );
+
+
+            const result =
+                await response.json();
+
+
+
+            if (!response.ok) {
+
+
+                joinMessage.textContent =
+                    result.error ||
+                    "Could not delete project";
+
+
+                deleteConfirmButton.disabled =
+                    false;
+
+
+                deleteConfirmButton.textContent =
+                    "DELETE";
+
+
+                deleteConfirmOverlay.classList.remove(
+                    "show"
+                );
+
+
+                return;
+
+            }
+
+
+            window.location.href =
+                "/profile";
+
+
+        }
+
+
+        catch (error) {
+
+
+            joinMessage.textContent =
+                "Could not delete project";
+
+
+            deleteConfirmButton.disabled =
+                false;
+
+
+            deleteConfirmButton.textContent =
+                "DELETE";
+
+
+            deleteConfirmOverlay.classList.remove(
+                "show"
+            );
+
+        }
+
+    }
+);
+
+
 
 loadProject();
+
+
 
 /*
 Loads the current project information every 3 seconds.
 */
-setInterval(loadProject, 3000);
+
+
+setInterval(
+    loadProject,
+    3000
+);
+
 
 </script>
+
 
 </body>
 

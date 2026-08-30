@@ -2443,3 +2443,26 @@ footer p {
 
     border-color: #5d5589;
 }
+
+.delete-confirm-delete {
+    background: rgb(209, 142, 142) !important;
+    color: white !important;
+}
+
+.delete-confirm-cancel {
+    background: rgb(131, 175, 149) !important;
+    color: white !important;
+}
+
+.delete-confirm-icon {
+    width: 65px;
+    height: 65px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: rgb(215, 215, 225) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: yellow !important;
+}
