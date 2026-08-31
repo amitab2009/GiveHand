@@ -1,5 +1,6 @@
 const path = require("path");
 const userModel = require("../models/userModel");
+const groupModel = require("../models/groupModel");
 const { uploadImage } = require("../middleware/upload");
 
 function showProfile(req, res) {
@@ -89,10 +90,34 @@ async function getJoinedProjects(req, res) {
     }
 }
 
+async function getCreatedGroups(req, res) {
+    try {
+        const groups = await groupModel.findCreatedBy(req.session.userId);
+        res.json(groups);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Could not load created groups" });
+    }
+}
+
+async function getJoinedGroups(req, res) {
+    try {
+        const groups = await groupModel.findJoinedBy(req.session.userId);
+        res.json(groups);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Could not load joined groups" });
+    }
+}
+
 module.exports = {
     showProfile,
     getProfile,
     updateProfile,
     getCreatedProjects,
-    getJoinedProjects
+    getJoinedProjects,
+    getCreatedGroups,
+    getJoinedGroups
 };

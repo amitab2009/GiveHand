@@ -96,6 +96,42 @@ function findByName(name) {
     return groups().findOne({ name: name });
 }
 
+function findCreatedBy(userId) {
+    return groups().aggregate([
+        { $match: { createdBy: new ObjectId(userId) } },
+        {
+            $project: {
+                name: 1,
+                description: 1,
+                emoji: 1,
+                isDefault: 1,
+                memberCount: {
+                    $size: { $ifNull: ["$members", []] }
+                }
+            }
+        },
+        { $sort: { name: 1 } }
+    ]).toArray();
+}
+
+function findJoinedBy(userId) {
+    return groups().aggregate([
+        { $match: { members: new ObjectId(userId) } },
+        {
+            $project: {
+                name: 1,
+                description: 1,
+                emoji: 1,
+                isDefault: 1,
+                memberCount: {
+                    $size: { $ifNull: ["$members", []] }
+                }
+            }
+        },
+        { $sort: { name: 1 } }
+    ]).toArray();
+}
+
 async function update(groupId, changes) {
     await groups().updateOne(
         { _id: new ObjectId(groupId) },
@@ -145,6 +181,8 @@ module.exports = {
     findAll,
     findById,
     findByName,
+    findCreatedBy,
+    findJoinedBy,
     update,
     create,
     join,

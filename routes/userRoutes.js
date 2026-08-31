@@ -28,5 +28,15 @@ router.get(
     requireAuth("Not logged in"),
     userController.getJoinedProjects
 );
+router.get(
+    "/api/profile/groups/created",
+    requireAuth("Not logged in"),
+    userController.getCreatedGroups
+);
+router.get(
+    "/api/profile/groups/joined",
+    requireAuth("Not logged in"),
+    userController.getJoinedGroups
+);
 
 module.exports = router;

@@ -2250,6 +2250,30 @@ async function startPage() {
 
         await loadGroups();
 
+
+        const selectedGroupId =
+            new URLSearchParams(
+                window.location.search
+            ).get("group");
+
+
+        if (selectedGroupId) {
+
+            const selectedGroup =
+                groups.find(
+                    function(group) {
+                        return String(group._id) ===
+                            String(selectedGroupId);
+                    }
+                );
+
+
+            if (selectedGroup) {
+                await openGroup(selectedGroup);
+            }
+
+        }
+
     }
     catch (error) {
 
