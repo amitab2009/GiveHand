@@ -17,6 +17,25 @@ function isMember(group, userId) {
     });
 }
 
+function validateGroupFields(body) {
+    const name = typeof body.name === "string" ? body.name.trim() : "";
+    const description = typeof body.description === "string"
+        ? body.description.trim()
+        : "";
+
+    if (name.length < 2 || name.length > 80) {
+        return { error: "Group name must be between 2 and 80 characters" };
+    }
+
+    if (description.length < 5 || description.length > 300) {
+        return {
+            error: "Group description must be between 5 and 300 characters"
+        };
+    }
+
+    return { name: name, description: description };
+}
+
 async function getGroups(req, res) {
     try {
         const userId = req.session.userId;
@@ -49,22 +68,21 @@ async function getGroups(req, res) {
 async function createGroup(req, res) {
     try {
         const userId = req.session.userId;
-        const name = String(req.body.name || "").trim();
-        const description = String(req.body.description || "").trim();
+        const fields = validateGroupFields(req.body);
 
-        if (!name) {
-            return res.status(400).json({ error: "Please enter a group name" });
+        if (fields.error) {
+            return res.status(400).json({ error: fields.error });
         }
 
-        if (await groupModel.findByName(name)) {
+        if (await groupModel.findByName(fields.name)) {
             return res.status(400).json({
                 error: "A group with this name already exists"
             });
         }
 
         const newGroup = {
-            name: name,
-            description: description,
+            name: fields.name,
+            description: fields.description,
             emoji: "👥",
             isDefault: false,
             members: [new ObjectId(userId)],
@@ -150,20 +168,13 @@ async function updateGroup(req, res) {
             });
         }
 
-        const name = String(req.body.name || "").trim();
-        const description = String(req.body.description || "").trim();
+        const fields = validateGroupFields(req.body);
 
-        if (!name) {
-            return res.status(400).json({ error: "Please enter a group name" });
+        if (fields.error) {
+            return res.status(400).json({ error: fields.error });
         }
 
-        if (!description) {
-            return res.status(400).json({
-                error: "Please enter a group description"
-            });
-        }
-
-        const existingGroup = await groupModel.findByName(name);
+        const existingGroup = await groupModel.findByName(fields.name);
 
         if (existingGroup && existingGroup._id.toString() !== groupId) {
             return res.status(400).json({
@@ -172,8 +183,8 @@ async function updateGroup(req, res) {
         }
 
         const updatedGroup = await groupModel.update(groupId, {
-            name: name,
-            description: description
+            name: fields.name,
+            description: fields.description
         });
 
         res.json({

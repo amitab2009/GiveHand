@@ -38,6 +38,7 @@
                     type="text"
                     id="groupName"
                     class="form-control"
+                    minlength="2"
                     maxlength="80"
                     required>
             </div>
@@ -48,6 +49,7 @@
                     id="groupDescription"
                     class="form-control"
                     rows="5"
+                    minlength="5"
                     maxlength="300"
                     required></textarea>
             </div>
@@ -105,8 +107,13 @@ form.addEventListener("submit", async function(event) {
     const name = document.getElementById("groupName").value.trim();
     const description = document.getElementById("groupDescription").value.trim();
 
-    if (!name || !description) {
-        errorText.textContent = "Please enter a group name and description.";
+    if (name.length < 2 || name.length > 80) {
+        errorText.textContent = "Group name must be between 2 and 80 characters.";
+        return;
+    }
+
+    if (description.length < 5 || description.length > 300) {
+        errorText.textContent = "Group description must be between 5 and 300 characters.";
         return;
     }
 
