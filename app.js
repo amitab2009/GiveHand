@@ -575,7 +575,17 @@ app.put(
     }
 );
 
+app.get("/statistics", function(req, res) {
 
+    res.sendFile(
+        path.join(
+            __dirname,
+            "views",
+            "statistics.html"
+        )
+    );
+
+});
 
 // feed
 
@@ -600,6 +610,19 @@ app.get("/groups", function(req, res) {
             __dirname,
             "views",
             "groups.html"
+        )
+    );
+
+});
+// statistics page
+
+app.get("/statistics", function(req, res) {
+
+    res.sendFile(
+        path.join(
+            __dirname,
+            "views",
+            "statistics.html"
         )
     );
 
@@ -2376,4 +2399,110 @@ app.post("/api/groups/:id/messages", async function(req, res) {
     }
 
 });
+
+// PROJECT STATISTICS
+
+
+
+// Projects grouped by category
+
+app.get(
+    "/api/statistics/projects-by-category",
+    async function(req, res) {
+
+        try {
+
+            const result =
+                await db
+                    .collection("projects")
+                    .aggregate([
+                        {
+                            $group: {
+                                _id: "$category",
+                                total: {
+                                    $sum: 1
+                                }
+                            }
+                        },
+                        {
+                            $sort: {
+                                total: -1
+                            }
+                        }
+                    ])
+                    .toArray();
+
+            res.json(result);
+
+        }
+        catch (error) {
+
+            console.log(
+                "PROJECT STATISTICS ERROR:",
+                error
+            );
+
+            res.status(500).json({
+                error:
+                    "Could not load project statistics"
+            });
+
+        }
+
+    }
+);
+
+
+// Volunteers grouped by category
+
+app.get(
+    "/api/statistics/volunteers-by-category",
+    async function(req, res) {
+
+        try {
+
+            const result =
+                await db
+                    .collection("projects")
+                    .aggregate([
+                        {
+                            $group: {
+                                _id: "$category",
+                                total: {
+                                    $sum: {
+                                        $ifNull: [
+                                            "$joined",
+                                            0
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $sort: {
+                                total: -1
+                            }
+                        }
+                    ])
+                    .toArray();
+
+            res.json(result);
+
+        }
+        catch (error) {
+
+            console.log(
+                "VOLUNTEER STATISTICS ERROR:",
+                error
+            );
+
+            res.status(500).json({
+                error:
+                    "Could not load volunteer statistics"
+            });
+
+        }
+
+    }
+);
 app.listen(3000);
