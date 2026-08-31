@@ -325,7 +325,8 @@
                 </button>
 
                 <button type="submit"
-                        class="profile-edit-save">
+                        id="saveProfileButton"
+                         class="profile-edit-save">
 
                     Save Changes
 
@@ -340,9 +341,73 @@
 </div>
 
 
+<div id="toastMessage"
+     class="toast-message">
+</div>
+
+
 <script>
 
 let currentUser = null;
+
+
+const toastMessage =
+    document.getElementById("toastMessage");
+
+
+let toastTimeout;
+
+
+function showToast(message, type) {
+
+    clearTimeout(toastTimeout);
+
+    toastMessage.textContent =
+        message;
+
+    toastMessage.className =
+        "toast-message";
+
+    if (type === "error") {
+
+        toastMessage.classList.add(
+            "toast-error"
+        );
+
+    }
+
+    else {
+
+        toastMessage.classList.add(
+            "toast-success"
+        );
+
+    }
+
+    setTimeout(
+        function() {
+
+            toastMessage.classList.add(
+                "show"
+            );
+
+        },
+        10
+    );
+
+    toastTimeout =
+        setTimeout(
+            function() {
+
+                toastMessage.classList.remove(
+                    "show"
+                );
+
+            },
+            3000
+        );
+
+}
 
 
 async function loadProfile() {
@@ -642,8 +707,10 @@ document
 
         if (fullName.length < 2) {
 
-            errorBox.textContent =
-                "Please enter your full name.";
+            showToast(
+                "Please enter your full name.",
+                "error"
+            );
 
             return;
         }
@@ -654,8 +721,10 @@ document
             !email.includes(".")
         ) {
 
-            errorBox.textContent =
-                "Please enter a valid email.";
+            showToast(
+                "Please enter a valid email.",
+                "error"
+            );
 
             return;
         }
@@ -687,34 +756,71 @@ document
         }
 
 
-        const response =
-            await fetch(
-                "/api/profile",
-                {
-                    method: "PUT",
-                    body: data
-                }
+        const saveProfileButton =
+            document.getElementById("saveProfileButton");
+
+
+        saveProfileButton.disabled =
+            true;
+
+        saveProfileButton.textContent =
+            "Saving...";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/profile",
+                    {
+                        method: "PUT",
+                        body: data
+                    }
+                );
+
+
+            const result =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    result.error ||
+                    "Could not update profile."
+                );
+
+            }
+
+
+            closeEditProfile();
+
+            await loadProfile();
+
+
+            showToast(
+                "Profile updated successfully!",
+                "success"
             );
-
-
-        const result =
-            await response.json();
-
-
-        if (!response.ok) {
-
-            errorBox.textContent =
-                result.error ||
-                "Could not update profile.";
-
-            return;
 
         }
 
+        catch (error) {
 
-        closeEditProfile();
+            saveProfileButton.disabled =
+                false;
 
-        await loadProfile();
+            saveProfileButton.textContent =
+                "Save Changes";
+
+
+            showToast(
+                error.message ||
+                "Could not update profile.",
+                "error"
+            );
+
+        }
 
     });
 
@@ -751,4 +857,4 @@ loadJoinedProjects();
 
 </body>
 
-</html>
+</html>ד

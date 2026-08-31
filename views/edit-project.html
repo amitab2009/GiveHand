@@ -202,7 +202,8 @@
  
                 </a> 
  
-                <button type="submit" 
+                <button type="submit"
+                        id="saveEditButton"
                         class="edit-save-button"> 
  
                     Save Changes 
@@ -215,7 +216,12 @@
  
     </div> 
  
-</main> 
+</main>
+
+
+<div id="toastMessage"
+     class="toast-message">
+</div>
  
  
 <script> 
@@ -230,9 +236,76 @@ const form =
     document.getElementById("editProjectForm"); 
  
 const errorBox = 
-    document.getElementById("editError"); 
+    document.getElementById("editError");
+
+
+const saveEditButton =
+    document.getElementById("saveEditButton");
+
+
+const toastMessage =
+    document.getElementById("toastMessage");
+
+
+let toastTimeout;
  
-let currentJoined = 0; 
+let currentJoined = 0;
+
+
+
+function showToast(message, type) {
+
+    clearTimeout(toastTimeout);
+
+    toastMessage.textContent =
+        message;
+
+    toastMessage.className =
+        "toast-message";
+
+
+    if (type === "error") {
+
+        toastMessage.classList.add(
+            "toast-error"
+        );
+
+    }
+
+    else {
+
+        toastMessage.classList.add(
+            "toast-success"
+        );
+
+    }
+
+
+    setTimeout(
+        function() {
+
+            toastMessage.classList.add(
+                "show"
+            );
+
+        },
+        10
+    );
+
+
+    toastTimeout =
+        setTimeout(
+            function() {
+
+                toastMessage.classList.remove(
+                    "show"
+                );
+
+            },
+            3000
+        );
+
+}
  
  
 async function loadProject() { 
@@ -343,19 +416,34 @@ form.addEventListener("submit", async function(event) {
         contact === "" 
     ) { 
  
-        errorBox.textContent = 
-            "Please fill in all fields"; 
+        showToast(
+            "Please fill in all fields",
+            "error"
+        );
  
         return; 
-    } 
+    }
+
+
+    if (volunteersNumber < 1) {
+
+        showToast(
+            "Number of volunteers must be at least 1",
+            "error"
+        );
+
+        return;
+    }
  
  
     if (volunteersNumber < currentJoined) { 
  
-        errorBox.textContent = 
+        showToast(
             "You already have " + 
             currentJoined + 
-            " volunteers joined. The number of volunteers needed cannot be lower than that."; 
+            " volunteers joined. The number of volunteers needed cannot be lower than that.",
+            "error"
+        );
  
         return; 
     } 
@@ -374,33 +462,75 @@ form.addEventListener("submit", async function(event) {
     if (image) {
         data.append("image", image);
     }
+
+
+    saveEditButton.disabled =
+        true;
+
+    saveEditButton.textContent =
+        "Saving...";
  
  
-    const response = await fetch( 
-        "/api/projects/" + projectId, 
-        { 
-            method: "PUT", 
-            body: data
-        } 
-    ); 
+    try {
+
+        const response = await fetch( 
+            "/api/projects/" + projectId, 
+            { 
+                method: "PUT", 
+                body: data
+            } 
+        ); 
  
  
-    const result = 
-        await response.json(); 
+        const result = 
+            await response.json(); 
  
  
-    if (!response.ok) { 
+        if (!response.ok) { 
  
-        errorBox.textContent = 
-            result.error || 
-            "Could not update project"; 
+            throw new Error(
+                result.error || 
+                "Could not update project"
+            );
  
-        return; 
-    } 
- 
- 
-    window.location.href = 
-        "/join-project/" + projectId; 
+        }
+
+
+        showToast(
+            "Project updated successfully!",
+            "success"
+        );
+
+
+        setTimeout(
+            function() {
+
+                window.location.href = 
+                    "/join-project/" + projectId;
+
+            },
+            900
+        );
+
+    }
+
+    catch (error) {
+
+
+        saveEditButton.disabled =
+            false;
+
+        saveEditButton.textContent =
+            "Save Changes";
+
+
+        showToast(
+            error.message ||
+            "Could not update project",
+            "error"
+        );
+
+    }
  
 }); 
  

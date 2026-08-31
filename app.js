@@ -695,6 +695,13 @@ app.post(
                 req.body.contact;
 
 
+            const latitude =
+                req.body.latitude;
+
+            const longitude =
+                req.body.longitude;
+
+
             let image = "";
 
 
@@ -750,6 +757,22 @@ app.post(
             };
 
 
+            if (
+                latitude !== undefined &&
+                longitude !== undefined &&
+                latitude !== "" &&
+                longitude !== ""
+            ) {
+
+                newProject.latitude =
+                    Number(latitude);
+
+                newProject.longitude =
+                    Number(longitude);
+
+            }
+
+
             await db.collection("projects").insertOne(
                 newProject
             );
@@ -773,22 +796,6 @@ app.post(
 
     }
 );
-
-
-
-// profile page
-
-app.get("/profile", function(req, res) {
-
-    res.sendFile(
-        path.join(
-            __dirname,
-            "views",
-            "profile.html"
-        )
-    );
-
-});
 
 
 
