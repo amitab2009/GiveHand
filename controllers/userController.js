@@ -1,5 +1,10 @@
+const path = require("path");
 const userModel = require("../models/userModel");
 const { uploadImage } = require("../middleware/upload");
+
+function showProfile(req, res) {
+    res.sendFile(path.join(__dirname, "..", "views", "profile.html"));
+}
 
 async function getProfile(req, res) {
     try {
@@ -85,6 +90,7 @@ async function getJoinedProjects(req, res) {
 }
 
 module.exports = {
+    showProfile,
     getProfile,
     updateProfile,
     getCreatedProjects,

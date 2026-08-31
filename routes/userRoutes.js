@@ -5,6 +5,8 @@ const { upload } = require("../middleware/upload");
 
 const router = express.Router();
 
+router.get("/profile", userController.showProfile);
+
 router.get(
     "/api/profile",
     requireAuth("Not logged in"),
