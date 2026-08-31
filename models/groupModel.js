@@ -64,6 +64,15 @@ function findByName(name) {
     return groups().findOne({ name: name });
 }
 
+async function update(groupId, changes) {
+    await groups().updateOne(
+        { _id: new ObjectId(groupId) },
+        { $set: changes }
+    );
+
+    return findById(groupId);
+}
+
 async function create(group) {
     const result = await groups().insertOne(group);
     return result.insertedId;
@@ -104,6 +113,7 @@ module.exports = {
     findAll,
     findById,
     findByName,
+    update,
     create,
     join,
     leave,

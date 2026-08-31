@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Group - GiveHand</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <a class="navbar-brand" href="/feed">GiveHand</a>
+        <div>
+            <a href="/feed" class="btn btn-outline-light">Feed</a>
+            <a href="/groups" class="btn btn-outline-light">Groups</a>
+            <a href="/profile" class="btn btn-outline-light">Profile</a>
+        </div>
+    </div>
+</nav>
+
+<main class="edit-project-page">
+    <div class="edit-project-card">
+        <div class="edit-project-header">
+            <div>
+                <span class="edit-small-title">Group settings</span>
+                <h2>Edit Group</h2>
+                <p>Update the information volunteers see about your group.</p>
+            </div>
+        </div>
+
+        <div id="editLoading" class="edit-loading">Loading group...</div>
+
+        <form id="editGroupForm" class="d-none">
+            <div class="edit-field">
+                <label for="groupName">Group name</label>
+                <input
+                    type="text"
+                    id="groupName"
+                    class="form-control"
+                    maxlength="80"
+                    required>
+            </div>
+
+            <div class="edit-field">
+                <label for="groupDescription">Description</label>
+                <textarea
+                    id="groupDescription"
+                    class="form-control"
+                    rows="5"
+                    maxlength="300"
+                    required></textarea>
+            </div>
+
+            <p id="editError" class="error-text"></p>
+
+            <div class="edit-project-actions">
+                <a href="/groups" class="edit-cancel-button">Cancel</a>
+                <button type="submit" id="saveEditButton" class="edit-save-button">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script>
+"use strict";
+
+const groupId = window.location.pathname.split("/").pop();
+const form = document.getElementById("editGroupForm");
+const loading = document.getElementById("editLoading");
+const errorText = document.getElementById("editError");
+const saveButton = document.getElementById("saveEditButton");
+
+async function loadGroup() {
+    try {
+        const response = await fetch(`/api/groups/${groupId}`, {
+            credentials: "same-origin"
+        });
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || "Could not load group");
+        }
+
+        if (!result.isOwner || result.isDefault) {
+            throw new Error("Only the creator can edit this group");
+        }
+
+        document.getElementById("groupName").value = result.name || "";
+        document.getElementById("groupDescription").value = result.description || "";
+        loading.classList.add("d-none");
+        form.classList.remove("d-none");
+    }
+    catch (error) {
+        loading.textContent = error.message;
+    }
+}
+
+form.addEventListener("submit", async function(event) {
+    event.preventDefault();
+    errorText.textContent = "";
+
+    const name = document.getElementById("groupName").value.trim();
+    const description = document.getElementById("groupDescription").value.trim();
+
+    if (!name || !description) {
+        errorText.textContent = "Please enter a group name and description.";
+        return;
+    }
+
+    saveButton.disabled = true;
+    saveButton.textContent = "Saving...";
+
+    try {
+        const response = await fetch(`/api/groups/${groupId}`, {
+            method: "PUT",
+            credentials: "same-origin",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: name, description: description })
+        });
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || "Could not update group");
+        }
+
+        window.location.href = "/groups";
+    }
+    catch (error) {
+        errorText.textContent = error.message;
+        saveButton.disabled = false;
+        saveButton.textContent = "Save Changes";
+    }
+});
+
+loadGroup();
+</script>
+</body>
+</html>

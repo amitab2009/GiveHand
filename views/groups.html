@@ -260,6 +260,21 @@
             cursor: pointer;
         }
 
+        .edit-button {
+            border: 1px solid #6d649d;
+            background: white;
+            color: #6d649d;
+            border-radius: 22px;
+            padding: 8px 16px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .edit-button:hover {
+            background: #6d649d;
+            color: white;
+        }
+
         .delete-button {
             border: 1px solid #dc3545;
             background: #dc3545;
@@ -643,6 +658,15 @@
                             style="display:none;">
 
                             Leave
+
+                        </button>
+
+
+                        <button
+                            id="editButton"
+                            class="edit-button">
+
+                            Edit Group
 
                         </button>
 
@@ -1172,6 +1196,12 @@ async function openGroup(group) {
         );
 
 
+    const editButton =
+        document.getElementById(
+            "editButton"
+        );
+
+
     /*
        Group To Join
     */
@@ -1185,6 +1215,9 @@ async function openGroup(group) {
             "none";
 
         deleteButton.style.display =
+            "none";
+
+        editButton.style.display =
             "none";
 
 
@@ -1239,10 +1272,16 @@ async function openGroup(group) {
         deleteButton.style.display =
             "block";
 
+        editButton.style.display =
+            "block";
+
     }
     else {
 
         deleteButton.style.display =
+            "none";
+
+        editButton.style.display =
             "none";
 
     }
@@ -1390,6 +1429,29 @@ document
 
 
             await loadGroups();
+
+        }
+    );
+
+
+/* =========================================
+   EDIT GROUP
+========================================= */
+
+document
+    .getElementById(
+        "editButton"
+    )
+    .addEventListener(
+        "click",
+        function() {
+
+            if (!currentGroup) {
+                return;
+            }
+
+            window.location.href =
+                `/edit-group/${currentGroup._id}`;
 
         }
     );

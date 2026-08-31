@@ -7,6 +7,10 @@ function showGroups(req, res) {
     res.sendFile(path.join(__dirname, "..", "views", "groups.html"));
 }
 
+function showEditGroup(req, res) {
+    res.sendFile(path.join(__dirname, "..", "views", "edit-group.html"));
+}
+
 function isMember(group, userId) {
     return (group.members || []).some(function(memberId) {
         return memberId.toString() === userId.toString();
@@ -83,6 +87,107 @@ async function createGroup(req, res) {
     catch (error) {
         console.log("CREATE GROUP ERROR:", error);
         res.status(500).json({ error: "Could not create group" });
+    }
+}
+
+async function getGroup(req, res) {
+    try {
+        const groupId = req.params.id;
+
+        if (!ObjectId.isValid(groupId)) {
+            return res.status(400).json({ error: "Invalid group ID" });
+        }
+
+        const group = await groupModel.findById(groupId);
+
+        if (!group) {
+            return res.status(404).json({ error: "Group not found" });
+        }
+
+        const isOwner = !!(
+            group.createdBy &&
+            group.createdBy.toString() === req.session.userId.toString()
+        );
+
+        res.json({
+            _id: group._id,
+            name: group.name,
+            description: group.description,
+            isDefault: group.isDefault,
+            isOwner: isOwner
+        });
+    }
+    catch (error) {
+        console.log("GET GROUP ERROR:", error);
+        res.status(500).json({ error: "Could not load group" });
+    }
+}
+
+async function updateGroup(req, res) {
+    try {
+        const userId = req.session.userId;
+        const groupId = req.params.id;
+
+        if (!ObjectId.isValid(groupId)) {
+            return res.status(400).json({ error: "Invalid group ID" });
+        }
+
+        const group = await groupModel.findById(groupId);
+
+        if (!group) {
+            return res.status(404).json({ error: "Group not found" });
+        }
+
+        if (group.isDefault === true) {
+            return res.status(403).json({
+                error: "Permanent groups cannot be edited"
+            });
+        }
+
+        if (!group.createdBy || group.createdBy.toString() !== userId.toString()) {
+            return res.status(403).json({
+                error: "Only the creator can edit this group"
+            });
+        }
+
+        const name = String(req.body.name || "").trim();
+        const description = String(req.body.description || "").trim();
+
+        if (!name) {
+            return res.status(400).json({ error: "Please enter a group name" });
+        }
+
+        if (!description) {
+            return res.status(400).json({
+                error: "Please enter a group description"
+            });
+        }
+
+        const existingGroup = await groupModel.findByName(name);
+
+        if (existingGroup && existingGroup._id.toString() !== groupId) {
+            return res.status(400).json({
+                error: "A group with this name already exists"
+            });
+        }
+
+        const updatedGroup = await groupModel.update(groupId, {
+            name: name,
+            description: description
+        });
+
+        res.json({
+            success: true,
+            group: {
+                _id: updatedGroup._id,
+                name: updatedGroup.name,
+                description: updatedGroup.description
+            }
+        });
+    }
+    catch (error) {
+        console.log("UPDATE GROUP ERROR:", error);
+        res.status(500).json({ error: "Could not update group" });
     }
 }
 
@@ -245,8 +350,11 @@ async function sendMessage(req, res) {
 
 module.exports = {
     showGroups,
+    showEditGroup,
     getGroups,
+    getGroup,
     createGroup,
+    updateGroup,
     joinGroup,
     leaveGroup,
     deleteGroup,
