@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test"
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,7 @@
     "express": "^5.2.1",
     "express-session": "^1.19.0",
     "mongodb": "^7.5.0",
-    "multer": "^2.2.0"
+    "multer": "^2.2.0",
+    "twitter-api-v2": "^1.29.1"
   }
 }
