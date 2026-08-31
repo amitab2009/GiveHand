@@ -1,3 +1,22 @@
+/* CSS3 assignment features */
+@font-face {
+    font-family: "GiveHand Roboto";
+    src: local("Roboto"),
+         url("https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxK.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+}
+
+.profile-image-circle {
+    border-radius: 50%;
+}
+
+.multi-column-text {
+    column-count: 2;
+    column-gap: 2rem;
+}
+
 body {
     margin: 0;
 
@@ -5603,4 +5622,30 @@ footer p {
         flex: 1;
         white-space: nowrap;
     }
+}
+
+body {
+    font-family: "GiveHand Roboto", Arial, sans-serif;
+}
+
+.navbar-brand,
+.feed-top h2,
+.project-info h4 {
+    text-shadow: 0 1px 2px rgba(45, 48, 64, 0.16);
+}
+
+.btn-success,
+.read-more {
+    transition: background-color 0.2s ease,
+                color 0.2s ease,
+                transform 0.2s ease;
+}
+
+.btn-success:hover,
+.read-more:hover {
+    transform: translateY(-1px);
+}
+
+.project-card {
+    border-radius: 8px;
 }

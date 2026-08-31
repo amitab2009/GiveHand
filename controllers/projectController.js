@@ -3,6 +3,7 @@ const { ObjectId } = require("mongodb");
 const projectModel = require("../models/projectModel");
 const userModel = require("../models/userModel");
 const { uploadImage } = require("../middleware/upload");
+const xPublisher = require("../services/xPublisher");
 
 function sendView(fileName) {
     return function(req, res) {
@@ -57,6 +58,18 @@ async function createProject(req, res) {
         }
 
         await projectModel.create(newProject);
+
+        try {
+            const postId = await xPublisher.publishProject(newProject);
+            console.log("Published X post:", postId);
+        }
+        catch (error) {
+            const reason = error && error.code === "X_NOT_CONFIGURED"
+                ? "not configured"
+                : "request failed";
+            console.warn("Could not publish project to X:", reason);
+        }
+
         res.json({ success: true });
     }
     catch (error) {
