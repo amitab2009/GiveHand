@@ -228,6 +228,58 @@
         </div>
 
 
+        <div class="profile-project-section">
+
+            <div class="profile-section-header">
+
+                <div>
+
+                    <h3>
+                        Groups I Created
+                    </h3>
+
+                    <p>
+                        Groups that you manage on GiveHand.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div id="createdGroups"
+                 class="profile-project-list">
+            </div>
+
+        </div>
+
+
+        <div class="profile-project-section">
+
+            <div class="profile-section-header">
+
+                <div>
+
+                    <h3>
+                        Groups I'm Part Of
+                    </h3>
+
+                    <p>
+                        Groups where you are currently a member.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div id="joinedGroups"
+                 class="profile-project-list">
+            </div>
+
+        </div>
+
+
         <section class="profile-statistics-section">
 
             <div class="profile-section-header">
@@ -566,6 +618,120 @@ async function loadJoinedProjects() {
         "joinedProjects",
         "You have not joined any projects yet."
     );
+}
+
+
+async function loadCreatedGroups() {
+
+    const response =
+        await fetch("/api/profile/groups/created");
+
+    const groups =
+        await response.json();
+
+    if (!response.ok) {
+        return;
+    }
+
+    showGroups(
+        groups,
+        "createdGroups",
+        "You have not created any groups yet."
+    );
+}
+
+
+async function loadJoinedGroups() {
+
+    const response =
+        await fetch("/api/profile/groups/joined");
+
+    const groups =
+        await response.json();
+
+    if (!response.ok) {
+        return;
+    }
+
+    showGroups(
+        groups,
+        "joinedGroups",
+        "You are not part of any groups yet."
+    );
+}
+
+
+function escapeHtml(value) {
+    const element =
+        document.createElement("div");
+
+    element.textContent =
+        value || "";
+
+    return element.innerHTML;
+}
+
+
+function showGroups(groups, elementId, emptyMessage) {
+
+    const list =
+        document.getElementById(elementId);
+
+    list.innerHTML = "";
+
+    if (groups.length === 0) {
+        list.innerHTML = `
+            <p style="color:#777; padding:15px;">
+                ${emptyMessage}
+            </p>
+        `;
+
+        return;
+    }
+
+    groups.forEach(function(group) {
+        const box =
+            document.createElement("div");
+
+        box.className =
+            "profile-project-row";
+
+        box.innerHTML = `
+            <div class="profile-project-photo">
+                <div class="profile-project-no-image">
+                    ${escapeHtml(group.emoji || "👥")}
+                </div>
+            </div>
+
+            <div class="profile-project-main">
+                <h4>${escapeHtml(group.name)}</h4>
+
+                <div class="profile-project-meta">
+                    <span>
+                        ${group.isDefault ? "Permanent group" : "Community group"}
+                    </span>
+                </div>
+
+                <p class="profile-project-description">
+                    ${escapeHtml(group.description)}
+                </p>
+            </div>
+
+            <div class="profile-project-count">
+                <strong>${Number(group.memberCount) || 0}</strong>
+                <span>Members</span>
+            </div>
+
+            <div class="profile-project-view">
+                <a href="/groups?group=${encodeURIComponent(group._id)}"
+                   class="btn profile-view-button">
+                    View Group
+                </a>
+            </div>
+        `;
+
+        list.appendChild(box);
+    });
 }
 
 
@@ -913,6 +1079,8 @@ document
 loadProfile();
 loadCreatedProjects();
 loadJoinedProjects();
+loadCreatedGroups();
+loadJoinedGroups();
 
 
 

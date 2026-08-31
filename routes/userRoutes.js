@@ -5,6 +5,8 @@ const { upload } = require("../middleware/upload");
 
 const router = express.Router();
 
+router.get("/profile", userController.showProfile);
+
 router.get(
     "/api/profile",
     requireAuth("Not logged in"),
@@ -25,6 +27,16 @@ router.get(
     "/api/profile/projects/joined",
     requireAuth("Not logged in"),
     userController.getJoinedProjects
+);
+router.get(
+    "/api/profile/groups/created",
+    requireAuth("Not logged in"),
+    userController.getCreatedGroups
+);
+router.get(
+    "/api/profile/groups/joined",
+    requireAuth("Not logged in"),
+    userController.getJoinedGroups
 );
 
 module.exports = router;

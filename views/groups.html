@@ -260,6 +260,21 @@
             cursor: pointer;
         }
 
+        .edit-button {
+            border: 1px solid #6d649d;
+            background: white;
+            color: #6d649d;
+            border-radius: 22px;
+            padding: 8px 16px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .edit-button:hover {
+            background: #6d649d;
+            color: white;
+        }
+
         .delete-button {
             border: 1px solid #dc3545;
             background: #dc3545;
@@ -550,6 +565,43 @@
                 </div>
 
 
+                <form id="groupSearchForm" class="group-search-form">
+
+                    <label for="groupSearchText">Search groups</label>
+
+                    <input
+                        id="groupSearchText"
+                        class="form-control"
+                        type="search"
+                        maxlength="80"
+                        placeholder="Name or description">
+
+                    <label for="minimumMembers">Minimum members</label>
+
+                    <input
+                        id="minimumMembers"
+                        class="form-control"
+                        type="number"
+                        min="0"
+                        step="1"
+                        value="0">
+
+                    <label for="membershipFilter">Membership</label>
+
+                    <select id="membershipFilter" class="form-select">
+                        <option value="all">All Groups</option>
+                        <option value="joined">Groups I Joined</option>
+                        <option value="notJoined">Groups I Have Not Joined</option>
+                    </select>
+
+                    <div class="group-search-actions">
+                        <button type="submit" class="btn btn-success">Search</button>
+                        <button type="button" id="clearGroupSearch" class="btn btn-outline-secondary">Clear</button>
+                    </div>
+
+                </form>
+
+
                 <div id="myGroupsList">
 
                     <div class="loading">
@@ -648,6 +700,15 @@
 
 
                         <button
+                            id="editButton"
+                            class="edit-button">
+
+                            Edit Group
+
+                        </button>
+
+
+                        <button
                             id="deleteButton"
                             class="delete-button">
 
@@ -723,6 +784,7 @@
             <input
                 id="groupName"
                 type="text"
+                minlength="2"
                 maxlength="80"
                 required>
 
@@ -734,7 +796,9 @@
 
             <textarea
                 id="groupDescription"
-                maxlength="300">
+                minlength="5"
+                maxlength="300"
+                required>
             </textarea>
 
 
@@ -819,9 +883,54 @@ async function loadUser() {
 
 async function loadGroups() {
 
+    const parameters =
+        new URLSearchParams();
+
+
+    const text =
+        document.getElementById(
+            "groupSearchText"
+        ).value.trim();
+
+
+    const minMembers =
+        document.getElementById(
+            "minimumMembers"
+        ).value;
+
+
+    const membership =
+        document.getElementById(
+            "membershipFilter"
+        ).value;
+
+
+    if (text) {
+        parameters.set("text", text);
+    }
+
+
+    if (minMembers) {
+        parameters.set(
+            "minMembers",
+            minMembers
+        );
+    }
+
+
+    parameters.set(
+        "membership",
+        membership
+    );
+
+
+    const query =
+        parameters.toString();
+
     const response =
         await fetch(
-            "/api/groups",
+            "/api/groups" +
+            (query ? "?" + query : ""),
             {
                 credentials: "same-origin"
             }
@@ -891,8 +1000,7 @@ function renderGroups() {
 
     /*
        GROUP TO JOIN:
-       Only the four permanent groups
-       that the user hasn't joined yet.
+       Groups the user has not joined yet.
     */
 
     const groupsToJoin =
@@ -900,7 +1008,6 @@ function renderGroups() {
             function(group) {
 
                 return (
-                    group.isDefault === true &&
                     group.isMember !== true
                 );
 
@@ -1172,6 +1279,12 @@ async function openGroup(group) {
         );
 
 
+    const editButton =
+        document.getElementById(
+            "editButton"
+        );
+
+
     /*
        Group To Join
     */
@@ -1185,6 +1298,9 @@ async function openGroup(group) {
             "none";
 
         deleteButton.style.display =
+            "none";
+
+        editButton.style.display =
             "none";
 
 
@@ -1239,10 +1355,16 @@ async function openGroup(group) {
         deleteButton.style.display =
             "block";
 
+        editButton.style.display =
+            "block";
+
     }
     else {
 
         deleteButton.style.display =
+            "none";
+
+        editButton.style.display =
             "none";
 
     }
@@ -1390,6 +1512,29 @@ document
 
 
             await loadGroups();
+
+        }
+    );
+
+
+/* =========================================
+   EDIT GROUP
+========================================= */
+
+document
+    .getElementById(
+        "editButton"
+    )
+    .addEventListener(
+        "click",
+        function() {
+
+            if (!currentGroup) {
+                return;
+            }
+
+            window.location.href =
+                `/edit-group/${currentGroup._id}`;
 
         }
     );
@@ -1813,6 +1958,44 @@ document
 
 
 /* =========================================
+   SEARCH GROUPS
+========================================= */
+
+document
+    .getElementById(
+        "groupSearchForm"
+    )
+    .addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+            await loadGroups();
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "clearGroupSearch"
+    )
+    .addEventListener(
+        "click",
+        async function() {
+
+            document.getElementById(
+                "groupSearchForm"
+            ).reset();
+
+            await loadGroups();
+
+        }
+    );
+
+
+/* =========================================
    CREATE GROUP MODAL
 ========================================= */
 
@@ -1894,7 +2077,28 @@ document
                     .trim();
 
 
-            if (!name) {
+            if (
+                name.length < 2 ||
+                name.length > 80
+            ) {
+
+                alert(
+                    "Group name must be between 2 and 80 characters."
+                );
+
+                return;
+            }
+
+
+            if (
+                description.length < 5 ||
+                description.length > 300
+            ) {
+
+                alert(
+                    "Group description must be between 5 and 300 characters."
+                );
+
                 return;
             }
 
@@ -2045,6 +2249,30 @@ async function startPage() {
 
 
         await loadGroups();
+
+
+        const selectedGroupId =
+            new URLSearchParams(
+                window.location.search
+            ).get("group");
+
+
+        if (selectedGroupId) {
+
+            const selectedGroup =
+                groups.find(
+                    function(group) {
+                        return String(group._id) ===
+                            String(selectedGroupId);
+                    }
+                );
+
+
+            if (selectedGroup) {
+                await openGroup(selectedGroup);
+            }
+
+        }
 
     }
     catch (error) {

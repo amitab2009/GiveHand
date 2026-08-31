@@ -52,8 +52,40 @@ async function createDefaultGroups() {
     }
 }
 
-function findAll() {
-    return groups().find({}).sort({ isDefault: -1, createdAt: 1 }).toArray();
+function escapeRegex(value) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function findAll(filters) {
+    const query = {};
+    const text = filters.text;
+    const userObjectId = new ObjectId(filters.userId);
+
+    if (text) {
+        const pattern = new RegExp(escapeRegex(text), "i");
+        query.$or = [
+            { name: pattern },
+            { description: pattern }
+        ];
+    }
+
+    if (filters.minMembers > 0) {
+        query.$expr = {
+            $gte: [
+                { $size: { $ifNull: ["$members", []] } },
+                filters.minMembers
+            ]
+        };
+    }
+
+    if (filters.membership === "joined") {
+        query.members = userObjectId;
+    }
+    else if (filters.membership === "notJoined") {
+        query.members = { $ne: userObjectId };
+    }
+
+    return groups().find(query).sort({ isDefault: -1, createdAt: 1 }).toArray();
 }
 
 function findById(groupId) {
@@ -62,6 +94,51 @@ function findById(groupId) {
 
 function findByName(name) {
     return groups().findOne({ name: name });
+}
+
+function findCreatedBy(userId) {
+    return groups().aggregate([
+        { $match: { createdBy: new ObjectId(userId) } },
+        {
+            $project: {
+                name: 1,
+                description: 1,
+                emoji: 1,
+                isDefault: 1,
+                memberCount: {
+                    $size: { $ifNull: ["$members", []] }
+                }
+            }
+        },
+        { $sort: { name: 1 } }
+    ]).toArray();
+}
+
+function findJoinedBy(userId) {
+    return groups().aggregate([
+        { $match: { members: new ObjectId(userId) } },
+        {
+            $project: {
+                name: 1,
+                description: 1,
+                emoji: 1,
+                isDefault: 1,
+                memberCount: {
+                    $size: { $ifNull: ["$members", []] }
+                }
+            }
+        },
+        { $sort: { name: 1 } }
+    ]).toArray();
+}
+
+async function update(groupId, changes) {
+    await groups().updateOne(
+        { _id: new ObjectId(groupId) },
+        { $set: changes }
+    );
+
+    return findById(groupId);
 }
 
 async function create(group) {
@@ -104,6 +181,9 @@ module.exports = {
     findAll,
     findById,
     findByName,
+    findCreatedBy,
+    findJoinedBy,
+    update,
     create,
     join,
     leave,
