@@ -5518,3 +5518,89 @@ footer p {
     color: #777780;
     font-size: 14px;
 }
+
+/* GROUP SEARCH AND EDIT CONTROLS */
+
+.group-search-form {
+    margin-bottom: 20px;
+    padding: 14px;
+    background: #f7f6fb;
+    border: 1px solid #e7e3ef;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(45, 48, 64, 0.05);
+}
+
+.group-search-form label {
+    display: block;
+    margin: 0 0 5px;
+    color: #65666f;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.group-search-form .form-control,
+.group-search-form .form-select {
+    min-height: 40px;
+    margin-bottom: 11px;
+    border-color: #ddd9e6;
+    border-radius: 10px;
+    font-size: 13px;
+}
+
+.group-search-form .form-control:focus,
+.group-search-form .form-select:focus {
+    border-color: #6d649d;
+    box-shadow: 0 0 0 3px rgba(109, 100, 157, 0.10);
+}
+
+.group-search-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+    margin-top: 4px;
+}
+
+.group-search-actions .btn {
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+@media (max-width: 850px) {
+
+    .group-search-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 12px;
+    }
+
+    .group-search-form label,
+    .group-search-form input,
+    .group-search-form select,
+    .group-search-actions {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .group-search-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .chat-header {
+        flex-wrap: wrap;
+    }
+
+    .chat-header-info {
+        min-width: calc(100% - 70px);
+    }
+
+    .edit-button,
+    .leave-button,
+    .delete-button,
+    .join-large-button {
+        flex: 1;
+        white-space: nowrap;
+    }
+}
