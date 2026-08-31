@@ -690,6 +690,7 @@ function showGroups(groups, elementId, emptyMessage) {
     }
 
     groups.forEach(function(group) {
+        const isCreatedGroup = elementId === "createdGroups";
         const box =
             document.createElement("div");
 
@@ -727,8 +728,49 @@ function showGroups(groups, elementId, emptyMessage) {
                    class="btn profile-view-button">
                     View Group
                 </a>
+                ${isCreatedGroup ? `
+                    <a href="/edit-group/${encodeURIComponent(group._id)}"
+                       class="btn profile-view-button">
+                        Edit
+                    </a>
+                    <button type="button"
+                            class="btn profile-view-button delete-created-group">
+                        Delete
+                    </button>
+                ` : ""}
             </div>
         `;
+
+        if (isCreatedGroup) {
+            box.querySelector(".delete-created-group").addEventListener(
+                "click",
+                async function() {
+                    const confirmed = confirm(
+                        `Are you sure you want to delete “${group.name}”? All messages will also be deleted.`
+                    );
+
+                    if (!confirmed) {
+                        return;
+                    }
+
+                    const response = await fetch(
+                        `/api/groups/${encodeURIComponent(group._id)}`,
+                        { method: "DELETE", credentials: "same-origin" }
+                    );
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        alert(result.error || "Could not delete group");
+                        return;
+                    }
+
+                    await Promise.all([
+                        loadCreatedGroups(),
+                        loadJoinedGroups()
+                    ]);
+                }
+            );
+        }
 
         list.appendChild(box);
     });
