@@ -39,8 +39,51 @@ function validateGroupFields(body) {
 async function getGroups(req, res) {
     try {
         const userId = req.session.userId;
+        const text = typeof req.query.text === "string"
+            ? req.query.text.trim()
+            : "";
+        const rawMinMembers = req.query.minMembers;
+        const membership = req.query.membership || "all";
+
+        if (text.length > 80) {
+            return res.status(400).json({
+                error: "Group search text cannot exceed 80 characters"
+            });
+        }
+
+        if (
+            rawMinMembers !== undefined &&
+            rawMinMembers !== "" &&
+            !/^\d+$/.test(String(rawMinMembers))
+        ) {
+            return res.status(400).json({
+                error: "Minimum members must be a non-negative integer"
+            });
+        }
+
+        if (!["all", "joined", "notJoined"].includes(membership)) {
+            return res.status(400).json({
+                error: "Invalid membership filter"
+            });
+        }
+
+        const minMembers = rawMinMembers === undefined || rawMinMembers === ""
+            ? 0
+            : Number(rawMinMembers);
+
+        if (!Number.isSafeInteger(minMembers) || minMembers > 1000000) {
+            return res.status(400).json({
+                error: "Minimum members must be a non-negative integer"
+            });
+        }
+
         await groupModel.createDefaultGroups();
-        const groups = await groupModel.findAll();
+        const groups = await groupModel.findAll({
+            text: text,
+            minMembers: minMembers,
+            membership: membership,
+            userId: userId
+        });
 
         const result = groups.map(function(group) {
             const members = group.members || [];

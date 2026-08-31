@@ -565,6 +565,43 @@
                 </div>
 
 
+                <form id="groupSearchForm" class="group-search-form">
+
+                    <label for="groupSearchText">Search groups</label>
+
+                    <input
+                        id="groupSearchText"
+                        class="form-control"
+                        type="search"
+                        maxlength="80"
+                        placeholder="Name or description">
+
+                    <label for="minimumMembers">Minimum members</label>
+
+                    <input
+                        id="minimumMembers"
+                        class="form-control"
+                        type="number"
+                        min="0"
+                        step="1"
+                        value="0">
+
+                    <label for="membershipFilter">Membership</label>
+
+                    <select id="membershipFilter" class="form-select">
+                        <option value="all">All Groups</option>
+                        <option value="joined">Groups I Joined</option>
+                        <option value="notJoined">Groups I Have Not Joined</option>
+                    </select>
+
+                    <div class="group-search-actions">
+                        <button type="submit" class="btn btn-success">Search</button>
+                        <button type="button" id="clearGroupSearch" class="btn btn-outline-secondary">Clear</button>
+                    </div>
+
+                </form>
+
+
                 <div id="myGroupsList">
 
                     <div class="loading">
@@ -846,9 +883,54 @@ async function loadUser() {
 
 async function loadGroups() {
 
+    const parameters =
+        new URLSearchParams();
+
+
+    const text =
+        document.getElementById(
+            "groupSearchText"
+        ).value.trim();
+
+
+    const minMembers =
+        document.getElementById(
+            "minimumMembers"
+        ).value;
+
+
+    const membership =
+        document.getElementById(
+            "membershipFilter"
+        ).value;
+
+
+    if (text) {
+        parameters.set("text", text);
+    }
+
+
+    if (minMembers) {
+        parameters.set(
+            "minMembers",
+            minMembers
+        );
+    }
+
+
+    parameters.set(
+        "membership",
+        membership
+    );
+
+
+    const query =
+        parameters.toString();
+
     const response =
         await fetch(
-            "/api/groups",
+            "/api/groups" +
+            (query ? "?" + query : ""),
             {
                 credentials: "same-origin"
             }
@@ -918,8 +1000,7 @@ function renderGroups() {
 
     /*
        GROUP TO JOIN:
-       Only the four permanent groups
-       that the user hasn't joined yet.
+       Groups the user has not joined yet.
     */
 
     const groupsToJoin =
@@ -927,7 +1008,6 @@ function renderGroups() {
             function(group) {
 
                 return (
-                    group.isDefault === true &&
                     group.isMember !== true
                 );
 
@@ -1872,6 +1952,44 @@ document
             await joinGroup(
                 currentGroup
             );
+
+        }
+    );
+
+
+/* =========================================
+   SEARCH GROUPS
+========================================= */
+
+document
+    .getElementById(
+        "groupSearchForm"
+    )
+    .addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+            await loadGroups();
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "clearGroupSearch"
+    )
+    .addEventListener(
+        "click",
+        async function() {
+
+            document.getElementById(
+                "groupSearchForm"
+            ).reset();
+
+            await loadGroups();
 
         }
     );
