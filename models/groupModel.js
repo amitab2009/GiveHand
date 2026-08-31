@@ -1,0 +1,113 @@
+const { ObjectId } = require("mongodb");
+const { getDB } = require("../db");
+
+const DEFAULT_GROUPS = [
+    {
+        name: "חלוקת משלוחים לחיילים",
+        description: "קבוצה למתנדבים שרוצים לעזור בחלוקת משלוחים ומארזים לחיילים.",
+        emoji: "🎖️"
+    },
+    {
+        name: "עזרה לניצולי שואה",
+        description: "קבוצה למתנדבים שרוצים לעזור ולתמוך בניצולי שואה.",
+        emoji: "🕊️"
+    },
+    {
+        name: "חלוקת מארזי ממתקים בבתי חולים",
+        description: "קבוצה למתנדבים שרוצים לשמח ילדים ומטופלים בבתי חולים.",
+        emoji: "🍬"
+    },
+    {
+        name: "הצלת בעלי חיים",
+        description: "קבוצה למתנדבים שרוצים לעזור לבעלי חיים ולפעול למענם.",
+        emoji: "🐾"
+    }
+];
+
+function groups() {
+    return getDB().collection("groups");
+}
+
+function messages() {
+    return getDB().collection("groupMessages");
+}
+
+async function createDefaultGroups() {
+    for (const group of DEFAULT_GROUPS) {
+        await groups().updateOne(
+            { name: group.name, isDefault: true },
+            {
+                $setOnInsert: {
+                    name: group.name,
+                    description: group.description,
+                    emoji: group.emoji,
+                    isDefault: true,
+                    members: [],
+                    createdBy: null,
+                    createdAt: new Date()
+                }
+            },
+            { upsert: true }
+        );
+    }
+}
+
+function findAll() {
+    return groups().find({}).sort({ isDefault: -1, createdAt: 1 }).toArray();
+}
+
+function findById(groupId) {
+    return groups().findOne({ _id: new ObjectId(groupId) });
+}
+
+function findByName(name) {
+    return groups().findOne({ name: name });
+}
+
+async function create(group) {
+    const result = await groups().insertOne(group);
+    return result.insertedId;
+}
+
+function join(groupId, userId) {
+    return groups().updateOne(
+        { _id: new ObjectId(groupId) },
+        { $addToSet: { members: new ObjectId(userId) } }
+    );
+}
+
+function leave(groupId, userId) {
+    return groups().updateOne(
+        { _id: new ObjectId(groupId) },
+        { $pull: { members: new ObjectId(userId) } }
+    );
+}
+
+async function remove(groupId) {
+    await groups().deleteOne({ _id: new ObjectId(groupId) });
+    await messages().deleteMany({ groupId: new ObjectId(groupId) });
+}
+
+function getMessages(groupId) {
+    return messages().find({
+        groupId: new ObjectId(groupId)
+    }).sort({ createdAt: 1 }).toArray();
+}
+
+async function createMessage(message) {
+    const result = await messages().insertOne(message);
+    return result.insertedId;
+}
+
+module.exports = {
+    createDefaultGroups,
+    findAll,
+    findById,
+    findByName,
+    create,
+    join,
+    leave,
+    remove,
+    getMessages,
+    createMessage
+};
