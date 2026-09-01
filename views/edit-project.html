@@ -425,10 +425,14 @@ form.addEventListener("submit", async function(event) {
     }
 
 
-    if (volunteersNumber < 1) {
+    if (
+        !Number.isFinite(volunteersNumber) ||
+        !Number.isInteger(volunteersNumber) ||
+        volunteersNumber < 1
+    ) {
 
         showToast(
-            "Number of volunteers must be at least 1",
+            "Number of volunteers must be a positive whole number",
             "error"
         );
 

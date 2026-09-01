@@ -8,7 +8,14 @@ async function findByUsername(username) {
 }
 
 async function create(user) {
-    await getDB().collection("users").insertOne(user);
+    const users = getDB().collection("users");
+
+    await users.createIndex(
+        { username: 1 },
+        { unique: true }
+    );
+
+    await users.insertOne(user);
     return user;
 }
 

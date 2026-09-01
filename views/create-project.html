@@ -639,10 +639,18 @@ form.addEventListener(
         }
 
 
-        if (Number(volunteers) < 1) {
+        const volunteersNumber =
+            Number(volunteers);
+
+
+        if (
+            !Number.isFinite(volunteersNumber) ||
+            !Number.isInteger(volunteersNumber) ||
+            volunteersNumber < 1
+        ) {
 
             showToast(
-                "Number of volunteers must be at least 1",
+                "Number of volunteers must be a positive whole number",
                 "error"
             );
 

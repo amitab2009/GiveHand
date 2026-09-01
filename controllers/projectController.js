@@ -5,6 +5,20 @@ const userModel = require("../models/userModel");
 const { uploadImage } = require("../middleware/upload");
 const xPublisher = require("../services/xPublisher");
 
+function parseVolunteerCount(value) {
+    const volunteers = Number(value);
+
+    if (
+        !Number.isFinite(volunteers) ||
+        !Number.isInteger(volunteers) ||
+        volunteers < 1
+    ) {
+        return null;
+    }
+
+    return volunteers;
+}
+
 function sendView(fileName) {
     return function(req, res) {
         res.sendFile(path.join(__dirname, "..", "views", fileName));
@@ -26,6 +40,14 @@ async function createProject(req, res) {
             return res.status(404).json({ error: "User not found" });
         }
 
+        const volunteers = parseVolunteerCount(req.body.volunteers);
+
+        if (volunteers === null) {
+            return res.status(400).json({
+                error: "Number of volunteers must be a positive whole number"
+            });
+        }
+
         let image = "";
 
         if (req.file) {
@@ -38,7 +60,7 @@ async function createProject(req, res) {
             description: req.body.description,
             location: req.body.location,
             category: req.body.category,
-            volunteers: Number(req.body.volunteers),
+            volunteers: volunteers,
             contact: req.body.contact,
             image: image,
             joined: 0,
@@ -234,8 +256,14 @@ async function updateProject(req, res) {
             });
         }
 
-        const volunteers = Number(req.body.volunteers);
+        const volunteers = parseVolunteerCount(req.body.volunteers);
         const currentJoined = project.joined || 0;
+
+        if (volunteers === null) {
+            return res.status(400).json({
+                error: "Number of volunteers must be a positive whole number"
+            });
+        }
 
         if (volunteers < currentJoined) {
             return res.status(400).json({
