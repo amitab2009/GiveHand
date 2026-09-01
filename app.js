@@ -37,4 +37,16 @@ app.use(userRoutes);
 app.use(projectRoutes);
 app.use(groupRoutes);
 
+app.use(function(error, req, res, next) {
+    console.error("UNHANDLED REQUEST ERROR:", error);
+
+    if (res.headersSent) {
+        return next(error);
+    }
+
+    res.status(500).json({
+        error: "An unexpected server error occurred"
+    });
+});
+
 app.listen(3000);

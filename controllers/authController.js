@@ -45,7 +45,16 @@ async function register(req, res) {
         profileImage: ""
     };
 
-    await userModel.create(newUser);
+    try {
+        await userModel.create(newUser);
+    }
+    catch (error) {
+        if (error && error.code === 11000) {
+            return res.json({ error: "username" });
+        }
+
+        throw error;
+    }
 
     req.session.userId = newUser._id.toString();
 
