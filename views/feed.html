@@ -2,29 +2,96 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Feed - GiveHand</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="/css/style.css">
+
+
+    <style>
+
+        /* Keep every project card the same height */
+        .project-card {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        /* Make the content inside the card fill the card */
+        .project-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        /* Keep Join / Cancel button at the bottom */
+        .project-info .btn {
+            margin-top: auto;
+        }
+
+    </style>
+
 </head>
 
+
 <body>
+
 
 <nav class="navbar navbar-expand-lg">
 
     <div class="container">
 
-        <a class="navbar-brand" href="/feed">GiveHand</a>
+        <a class="navbar-brand"
+           href="/feed">
+
+            GiveHand
+
+        </a>
+
 
         <div>
-            <a href="/statistics" class="btn btn-outline-light">Statistics</a>
-            <a href="/feed" class="btn btn-outline-light">Feed</a>
-            <a href="/groups" class="btn btn-outline-light">Groups</a>
-            
-            <a href="/profile" class="btn btn-outline-light">Profile</a>
+
+            <a href="/statistics"
+               class="btn btn-outline-light">
+
+                Statistics
+
+            </a>
+
+
+            <a href="/feed"
+               class="btn btn-outline-light">
+
+                Feed
+
+            </a>
+
+
+            <a href="/groups"
+               class="btn btn-outline-light">
+
+                Groups
+
+            </a>
+
+
+            <a href="/profile"
+               class="btn btn-outline-light">
+
+                Profile
+
+            </a>
 
         </div>
 
@@ -33,45 +100,65 @@
 </nav>
 
 
+
 <main class="feed-page">
 
     <section class="container">
 
+
         <header class="feed-top">
 
             <div>
-                <h2>Community Projects</h2>
+
+                <h2>
+                    Community Projects
+                </h2>
+
 
                 <p>
                     Find a project that needs your help.
                 </p>
+
             </div>
 
-            <a href="/create-project" class="btn btn-success">
-                 Create Project
+
+            <a href="/create-project"
+               class="btn btn-success">
+
+                Create Project
+
             </a>
 
         </header>
 
 
+
         <section class="search-box">
+
 
             <input type="text"
                    id="searchInput"
                    class="form-control"
                    placeholder="Search projects or locations">
 
+
             <button id="searchButton"
                     class="btn btn-success">
+
                 Search
+
             </button>
+
 
             <button id="filterButton"
                     class="btn btn-outline-success">
+
                 Filters
+
             </button>
 
         </section>
+
 
 
         <aside id="filterBox"
@@ -79,11 +166,13 @@
 
             <div class="row g-3">
 
+
                 <div class="col-md-4">
 
                     <label>
                         Category
                     </label>
+
 
                     <select id="categoryFilter"
                             class="form-select">
@@ -92,21 +181,26 @@
                             All Categories
                         </option>
 
+
                         <option value="Food">
                             Food
                         </option>
+
 
                         <option value="Education">
                             Education
                         </option>
 
+
                         <option value="Animals">
                             Animals
                         </option>
 
+
                         <option value="Environment">
                             Environment
                         </option>
+
 
                         <option value="Community">
                             Community
@@ -117,11 +211,13 @@
                 </div>
 
 
+
                 <div class="col-md-4">
 
                     <label>
                         Location
                     </label>
+
 
                     <input type="text"
                            id="locationFilter"
@@ -131,11 +227,13 @@
                 </div>
 
 
+
                 <div class="col-md-4">
 
                     <label>
                         Free places
                     </label>
+
 
                     <select id="placesFilter"
                             class="form-select">
@@ -144,13 +242,16 @@
                             Any number
                         </option>
 
+
                         <option value="1">
                             At least 1
                         </option>
 
+
                         <option value="5">
                             At least 5
                         </option>
+
 
                         <option value="10">
                             At least 10
@@ -165,20 +266,29 @@
         </aside>
 
 
+
         <section class="row g-4"
                  id="projectsList">
+
         </section>
+
 
     </section>
 
 </main>
 
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+
+
 
 <script>
 
+
 let allProjects = [];
+
 
 
 async function loadProjects() {
@@ -188,16 +298,22 @@ async function loadProjects() {
         const response =
             await fetch("/api/projects");
 
+
         allProjects =
             await response.json();
 
+
         if (!response.ok) {
+
             return;
+
         }
+
 
         searchProjects();
 
     }
+
     catch (error) {
 
         console.log(error);
@@ -207,39 +323,54 @@ async function loadProjects() {
 }
 
 
+
 function displayProjects(projects) {
 
     const list =
         document.getElementById("projectsList");
 
-    list.innerHTML = "";
+
+    list.innerHTML =
+        "";
 
 
     if (projects.length === 0) {
 
         list.innerHTML = `
+
             <div class="col-12">
+
                 <p class="text-center">
+
                     No projects found.
+
                 </p>
+
             </div>
+
         `;
 
         return;
+
     }
+
 
 
     projects.forEach(function(project) {
 
+
         const box =
             document.createElement("div");
+
 
         box.className =
             "col-lg-3 col-md-6";
 
 
         box.innerHTML = `
+
             <div class="project-card">
+
 
                 ${project.image ? `
 
@@ -252,7 +383,9 @@ function displayProjects(projects) {
                     <div class="project-top">
 
                         <span class="project-category">
+
                             ${project.category}
+
                         </span>
 
                     </div>
@@ -260,26 +393,40 @@ function displayProjects(projects) {
                 `}
 
 
+
                 <div class="project-info">
 
+
                     <h4>
+
                         ${project.projectName}
+
                     </h4>
 
 
+
                     <p class="location">
+
                         📍 ${project.location}
+
                     </p>
+
 
 
                     <p style="color: #6d649d; font-size: 13px; font-weight: 600;">
+
                         Posted by @${project.createdByUsername || "Unknown user"}
+
                     </p>
+
 
 
                     <p class="project-text">
+
                         ${project.description}
+
                     </p>
+
 
 
                     <a href="/join-project/${project._id}"
@@ -288,6 +435,7 @@ function displayProjects(projects) {
                         Read more
 
                     </a>
+
 
 
                     <p class="looking">
@@ -299,12 +447,14 @@ function displayProjects(projects) {
                     </p>
 
 
+
                     <p class="contact">
 
                         Contact:
                         ${project.contact}
 
                     </p>
+
 
 
                     ${project.currentUserJoined ? `
@@ -328,19 +478,25 @@ function displayProjects(projects) {
 
                     `}
 
+
                 </div>
 
+
             </div>
+
         `;
 
 
+
         list.appendChild(box);
+
 
 
         const cancelButton =
             box.querySelector(
                 ".cancel-feed-button"
             );
+
 
 
         if (cancelButton) {
@@ -363,7 +519,9 @@ function displayProjects(projects) {
 }
 
 
+
 function searchProjects() {
+
 
     const searchText =
         document
@@ -373,10 +531,12 @@ function searchProjects() {
             .toLowerCase();
 
 
+
     const category =
         document
             .getElementById("categoryFilter")
             .value;
+
 
 
     const locationFilter =
@@ -387,19 +547,23 @@ function searchProjects() {
             .toLowerCase();
 
 
+
     const placesFilter =
         document
             .getElementById("placesFilter")
             .value;
 
 
+
     const filteredProjects =
         allProjects.filter(function(project) {
+
 
             const projectName =
                 String(
                     project.projectName || ""
                 ).toLowerCase();
+
 
 
             const location =
@@ -408,10 +572,12 @@ function searchProjects() {
                 ).toLowerCase();
 
 
+
             const projectCategory =
                 String(
                     project.category || ""
                 );
+
 
 
             const volunteers =
@@ -420,10 +586,12 @@ function searchProjects() {
                 );
 
 
+
             const joined =
                 Number(
                     project.joined || 0
                 );
+
 
 
             const freePlaces =
@@ -433,10 +601,12 @@ function searchProjects() {
                 );
 
 
+
             const matchesSearch =
                 searchText === "" ||
                 projectName.includes(searchText) ||
                 location.includes(searchText);
+
 
 
             const matchesCategory =
@@ -444,9 +614,11 @@ function searchProjects() {
                 projectCategory === category;
 
 
+
             const matchesLocation =
                 locationFilter === "" ||
                 location.includes(locationFilter);
+
 
 
             const matchesPlaces =
@@ -455,24 +627,35 @@ function searchProjects() {
                 Number(placesFilter);
 
 
+
             return (
+
                 matchesSearch &&
+
                 matchesCategory &&
+
                 matchesLocation &&
+
                 matchesPlaces
+
             );
 
         });
 
 
-    displayProjects(filteredProjects);
+
+    displayProjects(
+        filteredProjects
+    );
 
 }
+
 
 
 async function cancelProject(projectId) {
 
     try {
+
 
         const response =
             await fetch(
@@ -485,25 +668,34 @@ async function cancelProject(projectId) {
             );
 
 
+
         const result =
             await response.json();
 
 
+
         if (!response.ok) {
+
 
             alert(
                 result.error ||
                 "Could not cancel joining"
             );
 
+
             return;
+
         }
+
 
 
         await loadProjects();
 
     }
+
+
     catch (error) {
+
 
         alert(
             "Could not cancel joining"
@@ -514,6 +706,7 @@ async function cancelProject(projectId) {
 }
 
 
+
 document
     .getElementById("searchButton")
     .addEventListener(
@@ -522,12 +715,14 @@ document
     );
 
 
+
 document
     .getElementById("searchInput")
     .addEventListener(
         "input",
         searchProjects
     );
+
 
 
 document
@@ -546,16 +741,19 @@ document
     );
 
 
+
 document
     .getElementById("filterButton")
     .addEventListener(
         "click",
         function() {
 
+
             const filterBox =
                 document.getElementById(
                     "filterBox"
                 );
+
 
 
             if (
@@ -567,6 +765,7 @@ document
                     "block";
 
             }
+
             else {
 
                 filterBox.style.display =
@@ -578,12 +777,14 @@ document
     );
 
 
+
 document
     .getElementById("categoryFilter")
     .addEventListener(
         "change",
         searchProjects
     );
+
 
 
 document
@@ -594,6 +795,7 @@ document
     );
 
 
+
 document
     .getElementById("placesFilter")
     .addEventListener(
@@ -602,9 +804,12 @@ document
     );
 
 
+
 loadProjects();
 
+
 </script>
+
 
 </body>
 
